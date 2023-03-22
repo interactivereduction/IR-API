@@ -11,18 +11,6 @@ from ir_api.scripts.script import Script
 
 logger = logging.getLogger(__name__)
 
-# INSTRUMENTS = ["foo", "bar", "baz"]
-#
-#
-# def get_all_scripts() -> None:
-#     """
-#     Get each script from the remote repository and write them locally
-#     :return: None
-#     """
-#     for instrument in INSTRUMENTS:
-#         script = get_by_instrument_name(instrument)
-#         write_script_locally(script)
-
 
 def _get_script_from_remote(instrument: str) -> Script:
     """
