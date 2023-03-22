@@ -13,6 +13,8 @@ from ir_api.scripts.acquisition import (
 )
 from ir_api.scripts.script import Script
 
+INSTRUMENT = "instrument_1"
+
 
 @pytest.fixture
 def mock_response():
@@ -36,22 +38,19 @@ def test__get_script_from_remote(mock_get, mock_response):
     """
     mock_get.return_value = mock_response
 
-    instrument = "instrument_1"
-    result = _get_script_from_remote(instrument)
+    result = _get_script_from_remote(INSTRUMENT)
     assert result.value == "test script content"
     assert result.is_latest
 
 
 @patch("requests.get")
-def test__get_script_from_remote_failure(mock_get):
+def test__get_script_from_remote_failure(mock_get, mock_response):
     """Test Runtime Error is raised when remote acquisition fails"""
-    mock_response = Mock()
     mock_response.status_code = 404
     mock_get.return_value = mock_response
 
-    instrument = "instrument_1"
     with pytest.raises(RuntimeError):
-        _get_script_from_remote(instrument)
+        _get_script_from_remote(INSTRUMENT)
 
 
 @patch("requests.get")
@@ -64,9 +63,8 @@ def test__get_script_from_remote_connection_error(mock_get, caplog):
     """
     mock_get.side_effect = ConnectionError
 
-    instrument = "instrument_1"
     with pytest.raises(ConnectionError):
-        _get_script_from_remote(instrument)
+        _get_script_from_remote(INSTRUMENT)
         assert "Could not get instrument_1 script from remote" in caplog.text
 
 
@@ -77,8 +75,7 @@ def test__get_script_locally(mock_file):
     :param mock_file: Mock - mocked file context manager
     :return: None
     """
-    instrument = "instrument_1"
-    result = _get_script_locally(instrument)
+    result = _get_script_locally(INSTRUMENT)
     assert result.value == "test script content"
     assert result.is_latest is False
     mock_file.assert_called_once_with("ir_api/local_scripts/instrument_1.py", "r", encoding="utf-8")
@@ -91,9 +88,8 @@ def test__get_script_locally_not_found(_):
     :param _: Discarded mock
     :return: None
     """
-    instrument = "instrument_1"
     with pytest.raises(RuntimeError):
-        _get_script_locally(instrument)
+        _get_script_locally(INSTRUMENT)
 
 
 @patch("builtins.open", new_callable=mock_open)
@@ -104,8 +100,7 @@ def test_write_script_locally(mock_file):
     :return: None
     """
     script = Script("test script content", is_latest=True)
-    instrument = "instrument_1"
-    write_script_locally(script, instrument)
+    write_script_locally(script, INSTRUMENT)
     mock_file.assert_called_once_with("ir_api/local_scripts/instrument_1.py", "w+", encoding="utf-8")
     mock_file().writelines.assert_called_once_with("test script content")
 
@@ -119,8 +114,7 @@ def test_get_by_instrument_name_remote_(mock_get_local, mock_get_remote):
     :param mock_get_remote: mock - mocked get remote
     :return: None
     """
-    instrument = "instrument_1"
-    get_by_instrument_name(instrument)
+    get_by_instrument_name(INSTRUMENT)
     mock_get_remote.assert_called_once()
     mock_get_local.assert_not_called()
 
@@ -134,7 +128,6 @@ def test_get_by_instrument_name_local(mock_local, mock_remote):
     :param mock_remote: mock - mock get remote
     :return: None
     """
-    instrument = "instrument_1"
-    get_by_instrument_name(instrument)
+    get_by_instrument_name(INSTRUMENT)
     mock_remote.assert_called_once()
     mock_local.assert_called_once()
