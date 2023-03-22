@@ -13,6 +13,7 @@ from ir_api.scripts.acquisition import (
 )
 from ir_api.scripts.script import Script
 
+# pylint: disable = redefined-outer-name
 INSTRUMENT = "instrument_1"
 
 
