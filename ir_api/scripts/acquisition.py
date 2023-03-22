@@ -91,6 +91,7 @@ def get_script_for_run(instrument: str, run_file: Optional[str] = None) -> Scrip
     logger.info("Getting script for instrument: %s...", instrument)
     script = get_by_instrument_name(instrument)
     if run_file:
+        # pylint: disable = fixme
         # TODO
         # transform = get_transform_for_run(instrument, run_file)
         # transform.apply(script, run_file)
