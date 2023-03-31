@@ -3,7 +3,7 @@ name = "ir-api"
 readme = "README.md"
 version = "0.0.1"
 dependencies = [
-    "fastapi[all]==0.93.0"
+    "fastapi[all]==0.95.0"
 ]
 
 
