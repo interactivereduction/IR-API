@@ -12,7 +12,7 @@ dependencies = [
 
 [project.optional-dependencies]
 formatting = [
-    "black==23.1.0"
+    "black==23.3.0"
 ]
 
 test = [
