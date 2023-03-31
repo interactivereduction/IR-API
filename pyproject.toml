@@ -1,0 +1,38 @@
+[project]
+name = "ir-api"
+readme = "README.md"
+version = "0.0.1"
+dependencies = [
+    "fastapi[all]==0.93.0"
+]
+
+
+[project.urls]
+"Repository" = "https://github.com/interactivereduction/ir-api"
+
+[project.optional-dependencies]
+formatting = [
+    "black==23.1.0"
+]
+
+test = [
+    "pytest==7.2.2",
+    "requests==2.28.2"
+]
+
+code-inspection = [
+    "pylint==2.16.3",
+    "mypy==1.0.1",
+    "ir-api[test]",
+    "types-requests==2.28.11.15",
+    "types-urllib3==1.26.25.8"
+]
+
+dev = [
+    "ir-api[code-inspection]",
+    "ir-api[formatting]"
+]
+
+
+[tool.setuptools]
+packages = ["ir_api"]
