@@ -57,7 +57,9 @@ async def missing_script_error(_: Request, __: MissingScriptError):
 
 
 @app.get("/instrument/{instrument}/script")
-async def get(instrument: str, background_tasks: BackgroundTasks, run_file: Optional[str] = None) -> ScriptResponse:
+async def get_pre_script(
+    instrument: str, background_tasks: BackgroundTasks, reduction_id: Optional[int] = None
+) -> PreScriptResponse:
     """
     Script URI - Not intended for calling
     :param instrument: the instrument
@@ -65,10 +67,10 @@ async def get(instrument: str, background_tasks: BackgroundTasks, run_file: Opti
     :param run_file: optional query parameter of runfile, used to apply transform
     :return: ScriptResponse
     """
-    script = Script(value="")
+    script = PreScript(value="")
     # This will never be returned from the api, but is necessary for the background task to run
     try:
-        script = get_script_for_run(instrument, run_file)
+        script = get_script_for_reduction(instrument, reduction_id)
         return script.to_response()
     finally:
         background_tasks.add_task(write_script_locally, script, instrument)
