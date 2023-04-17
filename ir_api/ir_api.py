@@ -7,6 +7,7 @@ from typing import Optional
 
 from fastapi import FastAPI, Request
 from starlette.background import BackgroundTasks
+from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
 from ir_api.core.exceptions import MissingRecordError, MissingScriptError
@@ -24,6 +25,17 @@ logger = logging.getLogger(__name__)
 
 
 app = FastAPI()
+
+# This must be updated before exposing outside the vpn
+ALLOWED_ORIGINS = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.exception_handler(MissingRecordError)
