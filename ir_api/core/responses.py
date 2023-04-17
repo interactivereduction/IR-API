@@ -8,7 +8,15 @@ from pydantic import BaseModel
 
 class ScriptResponse(BaseModel):
     """
-    ScriptResponse is the model returned by the script api resource
+    ScriptResponse returns from the API a script value
+    """
+
+    value: str
+
+
+class PreScriptResponse(BaseModel):
+    """
+    PreScript response returns from the API a PreScript
     """
 
     value: str
