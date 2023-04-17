@@ -31,6 +31,10 @@ Run on port 8080, by binding port 80 to port 8080 with a built container:
 docker run -p 8080:80 ghcr.io/interactivereduction/ir-api
 ```
 
+How to push the container to the Github container registry:
+```shell
+docker push ghcr.io/interactivereduction/ir-api -a
+```
 
 ## API Documentation
 Once deployed the auto generated api documentation is available at `/docs`. These can be used to inspect the API, and
