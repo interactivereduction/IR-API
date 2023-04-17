@@ -2,13 +2,17 @@ from unittest.mock import Mock
 
 import pytest
 
-from ir_api.core.entities import Script
+from ir_api.scripts.pre_script import PreScript
 from ir_api.scripts.transforms.mari_transforms import MariTransform
 
 
 @pytest.fixture
 def script():
-    return Script(
+    """
+    MariTransform  PreScript fixture
+    :return:
+    """
+    return PreScript(
         value="""from __future__ import print_function
 from mantid import config
 from MARIReduction_Sample import *
