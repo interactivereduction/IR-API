@@ -41,7 +41,7 @@ async def missing_record_handler(_: Request, __: MissingRecordError) -> JSONResp
 
 
 @app.exception_handler(MissingScriptError)
-async def missing_script_error(_: Request, __: MissingScriptError):
+async def missing_script_error(_: Request, __: MissingScriptError) -> JSONResponse:
     """
     Automatically return a 404 when the script could not be found locally or remote
     :param _:

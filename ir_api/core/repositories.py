@@ -4,12 +4,10 @@ database tables mapped to SQLAlchemy ORM models for the `Script`, `Reduction`, `
 and `Instrument` entities.
 """
 import logging
-import re
 from abc import ABC, abstractmethod
-from inspect import getsource
-from typing import Generic, TypeVar, Type, Optional, Callable, Sequence
+from typing import Generic, TypeVar, Type, Optional, Callable, Sequence, Union
 
-from sqlalchemy import create_engine, select, LambdaElement
+from sqlalchemy import create_engine, select, LambdaElement, ColumnElement
 from sqlalchemy.exc import MultipleResultsFound, NoResultFound
 from sqlalchemy.orm import sessionmaker
 
@@ -41,7 +39,9 @@ class ReadOnlyRepo(ABC, Generic[T]):
     def _model_type(self) -> Type[T]:
         pass
 
-    def find_one(self, filter_expression: Callable[[Type[T]], LambdaElement]) -> Optional[T]:
+    def find_one(
+        self, filter_expression: Callable[[Type[T]], Union[LambdaElement, ColumnElement["bool"]]]
+    ) -> Optional[T]:
         """
         Find the single entity, if more than one is returned, a NonUniqueRecordError will be raised
 
@@ -60,13 +60,10 @@ class ReadOnlyRepo(ABC, Generic[T]):
             except NoResultFound:
                 return None
             except MultipleResultsFound as exc:
-                logger.error(
-                    "Non unique record found for filter: %s",
-                    re.search(r"\s*lambda[^)]*", getsource(filter_expression)).group(),
-                )
+                logger.error("Non unique record found for filter: %s", filter_expression)
                 raise NonUniqueRecordError() from exc
 
-    def find(self, filter_expression: Callable[[Type[T]], LambdaElement]) -> Sequence[T]:
+    def find(self, filter_expression: Callable[[Type[T]], Union[LambdaElement, ColumnElement["bool"]]]) -> Sequence[T]:
         """
         Find entities that match a specified filter expression.
 
