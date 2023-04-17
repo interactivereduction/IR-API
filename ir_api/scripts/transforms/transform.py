@@ -9,7 +9,8 @@ MissingTransformError (Exception): A custom exception for handling cases where a
 """
 from abc import ABC, abstractmethod
 
-from ir_api.core.entities import Script, Reduction
+from ir_api.core.model import Reduction
+from ir_api.scripts.pre_script import PreScript
 
 
 class Transform(ABC):
@@ -18,10 +19,10 @@ class Transform(ABC):
     """
 
     @abstractmethod
-    def apply(self, script: Script, reduction: Reduction) -> None:
+    def apply(self, script: PreScript, reduction: Reduction) -> None:
         """
         Apply the transform on the given script
-        :param script: Script - the script to transform
+        :param script: PreScript - the script to transform
         :param reduction: Reduction the reduction entity
         :return: None
         """
