@@ -1,17 +1,19 @@
 """
 Tests for script acquisition
 """
-from unittest.mock import Mock, patch, mock_open
+from unittest.mock import Mock, patch, mock_open, MagicMock
 
 import pytest
 
+from ir_api.core.exceptions import MissingRecordError, MissingScriptError
 from ir_api.scripts.acquisition import (
     _get_script_from_remote,
     _get_script_locally,
     write_script_locally,
     get_by_instrument_name,
+    get_script_for_reduction,
 )
-from ir_api.scripts.script import Script
+from ir_api.scripts.pre_script import PreScript
 
 # pylint: disable = redefined-outer-name
 INSTRUMENT = "instrument_1"
@@ -89,7 +91,7 @@ def test__get_script_locally_not_found(_):
     :param _: Discarded mock
     :return: None
     """
-    with pytest.raises(RuntimeError):
+    with pytest.raises(MissingScriptError):
         _get_script_locally(INSTRUMENT)
 
 
@@ -100,7 +102,7 @@ def test_write_script_locally(mock_file):
     :param mock_file: Mock - mocked file context manager
     :return: None
     """
-    script = Script("test script content", is_latest=True)
+    script = PreScript("test script content", is_latest=True)
     write_script_locally(script, INSTRUMENT)
     mock_file.assert_called_once_with("ir_api/local_scripts/instrument_1.py", "w+", encoding="utf-8")
     mock_file().writelines.assert_called_once_with("test script content")
@@ -132,3 +134,61 @@ def test_get_by_instrument_name_local(mock_local, mock_remote):
     get_by_instrument_name(INSTRUMENT)
     mock_remote.assert_called_once()
     mock_local.assert_called_once()
+
+
+@patch("ir_api.scripts.acquisition.get_by_instrument_name")
+def test_get_script_for_reduction_no_reduction_id(mock_get_by_name):
+    """
+    Test base script returned when no id provided
+    :param mock_get_by_name: Mock
+    :return: None
+    """
+    expected_script = PreScript(value="some script")
+    mock_get_by_name.return_value = expected_script
+    result = get_script_for_reduction("some instrument")
+
+    assert result == expected_script
+
+
+@patch("ir_api.scripts.acquisition.get_transform_for_instrument")
+@patch("ir_api.scripts.acquisition.ReductionRepo")
+@patch("ir_api.scripts.acquisition.get_by_instrument_name")
+def test_get_script_for_reduction_with_valid_reduction_id(mock_get_by_name, mock_repo, mock_get_transform):
+    """
+    Test transform applied to obtained script when reduction id provided
+    :param mock_get_by_name: Mock
+    :param mock_repo: Mock
+    :param mock_get_transform: Mock
+    :return: None
+    """
+    mock_reduction = MagicMock()
+    mock_transform = Mock()
+    mock_get_transform.return_value = mock_transform
+    mock_repo.return_value.find_one.return_value = mock_reduction
+    expected_script = PreScript("some script")
+    mock_get_by_name.return_value = expected_script
+    result = get_script_for_reduction("some instrument", 1)
+    mock_get_by_name.assert_called_once_with("some instrument")
+    mock_get_transform.assert_called_once_with("some instrument")
+    mock_transform.apply.assert_called_once_with(expected_script, mock_reduction)
+
+    assert result == expected_script
+
+
+@patch("ir_api.scripts.acquisition.ReductionRepo")
+@patch("ir_api.scripts.acquisition.get_by_instrument_name", return_value="some instrument")
+def test_get_script_for_reduction_with_invalid_reduction_id(_, mock_repo):
+    """
+    Test exception raised when reduction id is given but no reduction exists
+    :param _: Mock
+    :param mock_repo: Mock
+    :return: None
+    """
+    mock_repo.return_value.find_one.return_value = None
+    instrument = "some_instrument"
+    reduction_id = -1
+
+    with pytest.raises(MissingRecordError) as excinfo:
+        get_script_for_reduction(instrument, reduction_id)
+
+    assert f"No reduction found with id: {reduction_id}" in str(excinfo.value)

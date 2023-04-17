@@ -1,24 +1,13 @@
 """
-Module containing the Script and ScriptResponse classes
+PreScript contains the PreScript definition. As it is not strictly a model, it does not belong in models.py
 """
+from ir_api.core.responses import PreScriptResponse
 
 
-from pydantic import BaseModel
-
-
-class ScriptResponse(BaseModel):
+class PreScript:
     """
-    ScriptResponse is the model returned by the script api resource
-    """
-
-    value: str
-    is_latest: bool
-
-
-class Script:
-    """
-    Script is the domain model representing a reduction script, tracking both the original value and if the script is
-    the latest version.
+    The PreScript is the script obtained from GitHub, prior to being used by the JobController, or being saved to the
+    database.
     """
 
     def __init__(self, value: str, is_latest: bool = False):
@@ -34,9 +23,12 @@ class Script:
         """
         return self._original_value
 
-    def to_response(self) -> ScriptResponse:
+    def to_response(self) -> PreScriptResponse:
         """
         Return a ScriptResponse model to be returned by the api
         :return: ScriptResponse - the ScriptResponse
         """
-        return ScriptResponse(value=self.value, is_latest=self.is_latest)
+        return PreScriptResponse(value=self.value, is_latest=self.is_latest)
+
+    def __repr__(self) -> str:
+        return f"PreScript(value={self.value}, is_latest={self.is_latest})"
