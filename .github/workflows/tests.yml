@@ -55,7 +55,7 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
         run: |
-          pytest test/core/test_repos_integration.py
+          pytest test/core/test_repositories_integration.py
   e2e:
     runs-on: ubuntu-latest
 
