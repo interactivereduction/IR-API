@@ -5,7 +5,7 @@ from ir_api.scripts.transforms.mari_transforms import MariTransform
 from ir_api.scripts.transforms.transform import Transform, MissingTransformError
 
 
-def get_transform_for_run(instrument) -> Transform:
+def get_transform_for_instrument(instrument: str) -> Transform:
     """
     Get the appropriate transform for the given instrument and run file
     :param instrument: str - the instrument
