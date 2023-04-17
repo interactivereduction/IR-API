@@ -2,6 +2,7 @@
 The interactive reduction ReST API.
 ![License: GPL-3.0](https://img.shields.io/github/license/InteractiveReduction/run-detection)
 ![Build: passing](https://img.shields.io/github/actions/workflow/status/interactivereduction/IR-API/tests.yml?branch=main)
+[![codecov](https://codecov.io/gh/interactivereduction/IR-API/branch/main/graph/badge.svg?token=XRJ1F7TEIT)](https://codecov.io/gh/interactivereduction/IR-API)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/PyCQA/pylint)
 
