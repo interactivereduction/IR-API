@@ -18,6 +18,7 @@ class MariTransform(Transform):
     entity.
     """
 
+    # pylint: disable = line-too-long
     def apply(self, script: PreScript, reduction: Reduction) -> None:
         lines = script.value.splitlines()
         # MyPY does not believe ColumnElement[JSONB] is indexable, despite JSONB implementing the Indexable mixin
@@ -38,6 +39,7 @@ class MariTransform(Transform):
                 continue
         script.value = "\n".join(lines)
 
+    # pylint: enable = line-too-long
     @staticmethod
     def _replace_input(
         line: str, lines: List[str], index: int, line_start: str, replacement: ColumnElement["JSONB"]

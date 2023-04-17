@@ -1,3 +1,7 @@
+"""
+Inegration tests for data access.
+Requires postgres running with user postgres and password password
+"""
 from datetime import datetime
 
 import pytest
@@ -5,6 +9,8 @@ import pytest
 from ir_api.core.exceptions import NonUniqueRecordError
 from ir_api.core.model import Base, Script, Instrument, Reduction, ReductionState, Run
 from ir_api.core.repositories import ScriptRepo, ENGINE, SESSION, ReductionRepo, RunRepo, InstrumentRepo
+
+# pylint: disable = redefined-outer-name
 
 TEST_SCRIPT = Script(value="print('Script 1')")
 TEST_REDUCTION = Reduction(
@@ -85,6 +91,10 @@ def setup() -> None:
 
 @pytest.fixture()
 def script_repo() -> ScriptRepo:
+    """
+    ScriptRepo fixture
+    :return: ScriptRepo
+    """
     return ScriptRepo()
 
 

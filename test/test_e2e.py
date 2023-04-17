@@ -43,6 +43,10 @@ TEST_RUN = Run(
 
 @pytest.fixture(scope="module", autouse=True)
 def setup():
+    """
+    Setup database pre testing
+    :return:
+    """
     Base.metadata.drop_all(ENGINE)
     Base.metadata.create_all(ENGINE)
     with SESSION() as session:
@@ -53,6 +57,10 @@ def setup():
 
 @patch("ir_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "ir_api/local_scripts")
 def test_get_default_mari_prescript():
+    """
+    Test obtaining of untransformed mari pre script
+    :return: None
+    """
     response = client.get("/instrument/mari/script")
 
     assert response.status_code == 200
@@ -124,6 +132,10 @@ def test_get_default_mari_prescript():
 
 
 def test_get_default_prescript_instrument_does_not_exist():
+    """
+    Test 404 for requesting script from unknown instrument
+    :return:
+    """
     response = client.get("/instrument/foo/script")
     assert response.status_code == 404
     assert response.json() == {
@@ -133,6 +145,10 @@ def test_get_default_prescript_instrument_does_not_exist():
 
 @patch("ir_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "ir_api/local_scripts")
 def test_get_prescript_when_reduction_does_not_exist():
+    """
+    Test return 404 when requesting pre script from non existant reduction
+    :return:
+    """
     response = client.get("/instrument/mari/script?reduction_id=4324234")
     assert response.status_code == 404
     assert response.json() == {"message": "Resource not found"}
@@ -140,6 +156,10 @@ def test_get_prescript_when_reduction_does_not_exist():
 
 @patch("ir_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "ir_api/local_scripts")
 def test_get_mari_prescript_for_reduction():
+    """
+    Test the return of transformed mari script
+    :return: None
+    """
     response = client.get("/instrument/mari/script?reduction_id=1")
     assert response.status_code == 200
     assert response.json() == {

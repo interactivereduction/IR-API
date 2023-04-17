@@ -1,9 +1,15 @@
+"""
+Test cases for MariTransform
+"""
 from unittest.mock import Mock
 
 import pytest
 
 from ir_api.scripts.pre_script import PreScript
 from ir_api.scripts.transforms.mari_transforms import MariTransform
+
+
+# pylint: disable = redefined-outer-name
 
 
 @pytest.fixture
@@ -65,6 +71,10 @@ iliad_mari(runno, ei, wbvan, monovan, sam_mass, sam_rmm, sum_runs, check_backgro
 
 @pytest.fixture
 def reduction():
+    """
+    Reduction fixture
+    :return:
+    """
     mock = Mock()
     mock.reduction_inputs = {
         "runno": 12345,
@@ -79,6 +89,12 @@ def reduction():
 
 
 def test_mari_transform_apply(script, reduction):
+    """
+    Test mari transform applies correct updates to script
+    :param script: The script fixture
+    :param reduction: The reduciton fixture
+    :return: None
+    """
     transform = MariTransform()
 
     original_lines = script.value.splitlines()
