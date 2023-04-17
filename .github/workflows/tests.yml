@@ -21,7 +21,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install .[test]
       - name: Run pytest
-        run: pytest . --ignore test/test_e2e.py test_repositories_integration.py
+        run: pytest . --ignore=test/test_e2e.py --ignore=test/core/test_repositories_integration.py
 
   integration:
     runs-on: ubuntu-latest

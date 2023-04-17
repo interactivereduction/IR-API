@@ -51,7 +51,7 @@ def setup():
         session.refresh(TEST_REDUCTION)
 
 
-@patch("ir_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "../ir_api/local_scripts")
+@patch("ir_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "ir_api/local_scripts")
 def test_get_default_mari_prescript():
     response = client.get("/instrument/mari/script")
 
@@ -131,14 +131,14 @@ def test_get_default_prescript_instrument_does_not_exist():
     }
 
 
-@patch("ir_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "../ir_api/local_scripts")
+@patch("ir_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "ir_api/local_scripts")
 def test_get_prescript_when_reduction_does_not_exist():
     response = client.get("/instrument/mari/script?reduction_id=4324234")
     assert response.status_code == 404
     assert response.json() == {"message": "Resource not found"}
 
 
-@patch("ir_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "../ir_api/local_scripts")
+@patch("ir_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "ir_api/local_scripts")
 def test_get_mari_prescript_for_reduction():
     response = client.get("/instrument/mari/script?reduction_id=1")
     assert response.status_code == 200
