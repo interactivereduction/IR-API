@@ -6,13 +6,17 @@ from typing import Optional
 
 import requests
 
-from ir_api.scripts.script import Script
-
+from ir_api.core.exceptions import MissingRecordError, MissingScriptError
+from ir_api.core.repositories import ReductionRepo
+from ir_api.scripts.pre_script import PreScript
+from ir_api.scripts.transforms.factory import get_transform_for_instrument
 
 logger = logging.getLogger(__name__)
 
+LOCAL_SCRIPT_DIR = "ir_api/local_scripts"
 
-def _get_script_from_remote(instrument: str) -> Script:
+
+def _get_script_from_remote(instrument: str) -> PreScript:
     """
     Get the remote script for given instrument
     :param instrument: str - instrument name
@@ -30,7 +34,7 @@ def _get_script_from_remote(instrument: str) -> Script:
             logger.warning("Could not get %s script from remote", instrument)
             raise RuntimeError(f"Could not get {instrument} script from remote")
         logger.info("Obtained %s script", instrument)
-        return Script(request.text, is_latest=True)
+        return PreScript(request.text, is_latest=True)
 
     except ConnectionError:
         # log exception
@@ -38,7 +42,7 @@ def _get_script_from_remote(instrument: str) -> Script:
         raise
 
 
-def _get_script_locally(instrument: str) -> Script:
+def _get_script_locally(instrument: str) -> PreScript:
     """
     Get the local copy of the script for the given instrument
     :param instrument: str - instrument name
@@ -46,14 +50,14 @@ def _get_script_locally(instrument: str) -> Script:
     """
     try:
         logger.info("Attempting to get %s script locally...", instrument)
-        with open(f"ir_api/local_scripts/{instrument}.py", "r", encoding="utf-8") as fle:
-            return Script(value="".join(line for line in fle))
+        with open(f"{LOCAL_SCRIPT_DIR}/{instrument}.py", "r", encoding="utf-8") as fle:
+            return PreScript(value="".join(line for line in fle))
     except FileNotFoundError as exc:
         logger.exception("Could not retrieve %s script locally", instrument)
-        raise RuntimeError(f"Unable to load any script for instrument: {instrument}") from exc
+        raise MissingScriptError(f"Unable to load any script for instrument: {instrument}") from exc
 
 
-def write_script_locally(script: Script, instrument: str) -> None:
+def write_script_locally(script: PreScript, instrument: str) -> None:
     """
     Write the given script locally
     :param script: Script - the script to write
@@ -65,11 +69,11 @@ def write_script_locally(script: Script, instrument: str) -> None:
         raise RuntimeError(f"Failed to acquire script for instrument {instrument} from remote and locally")
     if script.is_latest:
         logger.info("Updating local %s script", instrument)
-        with open(f"ir_api/local_scripts/{instrument}.py", "w+", encoding="utf-8") as fle:
+        with open(f"{LOCAL_SCRIPT_DIR}/{instrument}.py", "w+", encoding="utf-8") as fle:
             fle.writelines(script.original_value)
 
 
-def get_by_instrument_name(instrument: str) -> Script:
+def get_by_instrument_name(instrument: str) -> PreScript:
     """
     Get the script object for the given instrument
     :param instrument: str - the instrument
@@ -81,19 +85,21 @@ def get_by_instrument_name(instrument: str) -> Script:
         return _get_script_locally(instrument)
 
 
-def get_script_for_run(instrument: str, run_file: Optional[str] = None) -> Script:
+def get_script_for_reduction(instrument: str, reduction_id: Optional[int] = None) -> PreScript:
     """
-    Get the script object for the given run, and optional run file
+    Get the script object for the given instrument, and optional reduction id
     :param instrument: str -  The instrument
-    :param run_file: Optional[str] - the run file name. If provided will apply necessary transforms to the script
-    :return: Script -  The script
+    :param reduction_id: Optional[id] - the reduction id. If provided will apply necessary transforms to the script
+    :return: PreScript -  The script
     """
     logger.info("Getting script for instrument: %s...", instrument)
     script = get_by_instrument_name(instrument)
-    if run_file:
-        # pylint: disable = fixme
-        # TODO
-        # transform = get_transform_for_run(instrument, run_file)
-        # transform.apply(script, run_file)
-        pass
+    if reduction_id:
+        reduction_repo = ReductionRepo()
+        reduction = reduction_repo.find_one(lambda r: r.id == reduction_id)
+        if not reduction:
+            raise MissingRecordError(f"No reduction found with id: {reduction_id}")
+        transform = get_transform_for_instrument(instrument)
+        transform.apply(script, reduction)
+
     return script
