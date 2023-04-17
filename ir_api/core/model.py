@@ -1,0 +1,132 @@
+"""
+This module contains classes and enums that define the structure of the database tables and relationships for storing
+information about instruments, runs, scripts, and reductions.
+"""
+from __future__ import annotations
+
+import enum
+from datetime import datetime
+from typing import Optional, List
+
+from sqlalchemy import Table, Column, ForeignKey, String, DateTime, Enum, Integer, inspect
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
+
+
+class ReductionState(enum.Enum):
+    """
+    An enumeration representing the possible reduction states.
+    """
+
+    SUCCESSFUL = "Successful"
+    UNSUCCESSFUL = "Unsuccessful"
+    ERROR = "Error"
+    NOT_STARTED = "NotStarted"
+
+
+class Base(DeclarativeBase):
+    """
+    Base class for SQLAlchemy ORM models. It includes a primary key `id` attribute, and defines equality as deep
+    equality.
+    """
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    def __eq__(self, other: object) -> bool:
+        """
+        Check if two instances of Base are equal by comparing the values of their column attributes.
+
+        :param other: The other instance of Base to compare with.
+        :return: True if the instances are equal, False otherwise.
+        """
+        if not isinstance(other, Base):
+            return False
+        # Ignores due to inspect returning Any, includes None, by default
+        return {attr.key: getattr(self, attr.key) for attr in inspect(self).mapper.column_attrs} == {  # type: ignore
+            attr.key: getattr(other, attr.key) for attr in inspect(other).mapper.column_attrs  # type: ignore
+        }
+
+
+run_reduction_junction_table = Table(
+    "runs_reductions",
+    Base.metadata,
+    Column("run_id", ForeignKey("runs.id")),
+    Column("reduction_id", ForeignKey("reductions.id")),
+)
+
+
+class Script(Base):
+    """
+    The Script class represents a script in the database.
+    """
+
+    __tablename__ = "scripts"
+    value: Mapped[str] = mapped_column(String())
+
+    def __repr__(self) -> str:
+        return f"Script(id={self.id}, value='{self.value}')"
+
+
+class Reduction(Base):
+    """
+    The Reduction class represents a reduction in the database.
+    """
+
+    __tablename__ = "reductions"
+    reduction_start: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
+    reduction_end: Mapped[Optional[datetime]] = mapped_column(DateTime(), nullable=True)
+    reduction_state: Mapped[ReductionState] = mapped_column(Enum(ReductionState))
+    reduction_inputs: Mapped[JSONB] = mapped_column(JSONB)
+    reduction_outputs: Mapped[Optional[str]] = mapped_column(String())
+    script_id: Mapped[Optional[int]] = mapped_column(ForeignKey("scripts.id"))
+    script: Mapped[Optional["Script"]] = relationship("Script", lazy="subquery")
+    runs: Mapped[List[Run]] = relationship(
+        secondary=run_reduction_junction_table, back_populates="reductions", lazy="subquery"
+    )
+
+    def __repr__(self) -> str:
+        return (
+            f"Reduction(id={self.id}, reduction_start={self.reduction_start}, reduction_end={self.reduction_end}"
+            f", reduction_state={self.reduction_state}, reduction_inputs={self.reduction_inputs},"
+            f" reduction_outputs={self.reduction_outputs}, script_id={self.script_id})"
+        )
+
+
+class Instrument(Base):
+    """
+    The Instrument class represents an instrument in the database.
+    """
+
+    __tablename__ = "instruments"
+    instrument_name: Mapped[str] = mapped_column(String())
+
+    def __repr__(self) -> str:
+        return f"Instrument(id={self.id}, instrument_name={self.instrument_name})"
+
+
+class Run(Base):
+    """
+    The Run class represents a run in the database.
+    """
+
+    __tablename__ = "runs"
+    filename: Mapped[str] = mapped_column(String())
+    experiment_number: Mapped[int] = mapped_column(Integer())
+    experiment_title: Mapped[str] = mapped_column(String())
+    users: Mapped[str] = mapped_column(String())
+    run_start: Mapped[datetime] = mapped_column(DateTime)
+    run_end: Mapped[datetime] = mapped_column(DateTime)
+    good_frames: Mapped[int] = mapped_column(Integer())
+    raw_frames: Mapped[int] = mapped_column(Integer())
+    instrument_id: Mapped[int] = mapped_column(ForeignKey("instruments.id"))
+    instrument: Mapped[Instrument] = relationship("Instrument", lazy="subquery")
+    reductions: Mapped[List[Reduction]] = relationship(
+        secondary=run_reduction_junction_table, back_populates="runs", lazy="subquery"
+    )
+
+    def __repr__(self) -> str:
+        return (
+            f"Run(id={self.id}, filename={self.filename}, title={self.experiment_title}, users={self.users},"
+            f" run_start={self.run_start}, run_end={self.run_end}, good_frames={self.good_frames},"
+            f" raw_frames={self.raw_frames})"
+        )
