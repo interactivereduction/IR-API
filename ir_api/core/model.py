@@ -18,10 +18,10 @@ class ReductionState(enum.Enum):
     An enumeration representing the possible reduction states.
     """
 
-    SUCCESSFUL = "Successful"
-    UNSUCCESSFUL = "Unsuccessful"
-    ERROR = "Error"
-    NOT_STARTED = "NotStarted"
+    Successful = "Successful"
+    Unsuccessful = "Unsuccessful"
+    Error = "Error"
+    NotStarted = "NotStarted"
 
 
 class Base(DeclarativeBase):
@@ -50,8 +50,8 @@ class Base(DeclarativeBase):
 run_reduction_junction_table = Table(
     "runs_reductions",
     Base.metadata,
-    Column("run_id", ForeignKey("runs.id")),
-    Column("reduction_id", ForeignKey("reductions.id")),
+    Column("run", ForeignKey("runs.id")),
+    Column("reduction", ForeignKey("reductions.id")),
 )
 
 
@@ -61,10 +61,10 @@ class Script(Base):
     """
 
     __tablename__ = "scripts"
-    value: Mapped[str] = mapped_column(String())
+    script: Mapped[str] = mapped_column(String())
 
     def __repr__(self) -> str:
-        return f"Script(id={self.id}, value='{self.value}')"
+        return f"Script(id={self.id}, value='{self.script}')"
 
 
 class Reduction(Base):
@@ -76,6 +76,7 @@ class Reduction(Base):
     reduction_start: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
     reduction_end: Mapped[Optional[datetime]] = mapped_column(DateTime(), nullable=True)
     reduction_state: Mapped[ReductionState] = mapped_column(Enum(ReductionState))
+    reduction_status_message: Mapped[str] = mapped_column(String())
     reduction_inputs: Mapped[JSONB] = mapped_column(JSONB)
     reduction_outputs: Mapped[Optional[str]] = mapped_column(String())
     script: Mapped[Optional[int]] = mapped_column(ForeignKey("scripts.id"))
@@ -112,21 +113,21 @@ class Run(Base):
     __tablename__ = "runs"
     filename: Mapped[str] = mapped_column(String())
     experiment_number: Mapped[int] = mapped_column(Integer())
-    experiment_title: Mapped[str] = mapped_column(String())
+    title: Mapped[str] = mapped_column(String())
     users: Mapped[str] = mapped_column(String())
     run_start: Mapped[datetime] = mapped_column(DateTime)
     run_end: Mapped[datetime] = mapped_column(DateTime)
     good_frames: Mapped[int] = mapped_column(Integer())
     raw_frames: Mapped[int] = mapped_column(Integer())
-    instrument_id: Mapped[int] = mapped_column(ForeignKey("instruments.id"))
-    instrument: Mapped[Instrument] = relationship("Instrument", lazy="subquery")
+    instrument: Mapped[int] = mapped_column(ForeignKey("instruments.id"))
+    instrument_relationship: Mapped[Instrument] = relationship("Instrument", lazy="subquery")
     reductions: Mapped[List[Reduction]] = relationship(
         secondary=run_reduction_junction_table, back_populates="runs", lazy="subquery"
     )
 
     def __repr__(self) -> str:
         return (
-            f"Run(id={self.id}, filename={self.filename}, title={self.experiment_title}, users={self.users},"
+            f"Run(id={self.id}, filename={self.filename}, title={self.title}, users={self.users},"
             f" run_start={self.run_start}, run_end={self.run_end}, good_frames={self.good_frames},"
             f" raw_frames={self.raw_frames})"
         )

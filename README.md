@@ -62,7 +62,7 @@ For example:
 class YourInstrumentTransform(Transform):
     def apply(self, script: PreScript, reduction: Reduction) -> None:
         # Your script modification logic here e.g.
-        script.value = f"print('hello {reduction.reduction_inputs.get('user', 'world')}')"
+        script.script = f"print('hello {reduction.reduction_inputs.get('user', 'world')}')"
 ```
   - Update the get_transform_for_instrument factory function to return an instance of your new transform class when the 
 appropriate instrument is provided as input by adding a new case for your instrument in the match statement:
