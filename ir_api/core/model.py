@@ -78,8 +78,8 @@ class Reduction(Base):
     reduction_state: Mapped[ReductionState] = mapped_column(Enum(ReductionState))
     reduction_inputs: Mapped[JSONB] = mapped_column(JSONB)
     reduction_outputs: Mapped[Optional[str]] = mapped_column(String())
-    script_id: Mapped[Optional[int]] = mapped_column(ForeignKey("scripts.id"))
-    script: Mapped[Optional["Script"]] = relationship("Script", lazy="subquery")
+    script: Mapped[Optional[int]] = mapped_column(ForeignKey("scripts.id"))
+    script_relationship: Mapped[Optional["Script"]] = relationship("Script", lazy="subquery")
     runs: Mapped[List[Run]] = relationship(
         secondary=run_reduction_junction_table, back_populates="reductions", lazy="subquery"
     )
@@ -88,7 +88,7 @@ class Reduction(Base):
         return (
             f"Reduction(id={self.id}, reduction_start={self.reduction_start}, reduction_end={self.reduction_end}"
             f", reduction_state={self.reduction_state}, reduction_inputs={self.reduction_inputs},"
-            f" reduction_outputs={self.reduction_outputs}, script_id={self.script_id})"
+            f" reduction_outputs={self.reduction_outputs}, script_id={self.script})"
         )
 
 
