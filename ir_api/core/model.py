@@ -127,7 +127,7 @@ class Run(Base):
 
     def __repr__(self) -> str:
         return (
-            f"Run(id={self.id}, filename={self.filename}, title={self.title}, users={self.users},"
+            f"Run(id={self.id}, filename={self.filename}, experiment_number={self.experiment_number}, title={self.title}, users={self.users},"
             f" run_start={self.run_start}, run_end={self.run_end}, good_frames={self.good_frames},"
-            f" raw_frames={self.raw_frames})"
+            f" raw_frames={self.raw_frames}, instrument_id={self.instrument_id})"
         )
