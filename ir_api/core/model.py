@@ -89,7 +89,7 @@ class Reduction(Base):
         return (
             f"Reduction(id={self.id}, reduction_start={self.reduction_start}, reduction_end={self.reduction_end}"
             f", reduction_state={self.reduction_state}, reduction_inputs={self.reduction_inputs},"
-            f" reduction_outputs={self.reduction_outputs}, script_id={self.script})"
+            f" reduction_outputs={self.reduction_outputs}, script_id={self.script_id})"
         )
 
 
