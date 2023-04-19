@@ -227,8 +227,7 @@ def test_run_repo_find(run_repo):
     assert len(found_runs) == 1
 
     found_runs = run_repo.find(
-        lambda r: r.instrument.has(Instrument.instrument_name == "instrument 1")
-        & (r.title == "Test Run 2")
+        lambda r: r.instrument.has(Instrument.instrument_name == "instrument 1") & (r.title == "Test Run 2")
     )
     assert found_runs[0] == TEST_RUN_2
     assert len(found_runs) == 1
@@ -241,16 +240,14 @@ def test_run_repo_find_multiple_filters(run_repo):
     :return: None
     """
     found_runs = run_repo.find(
-        lambda r: r.instrument.has(Instrument.instrument_name == "instrument 1")
-        & (r.users == "User1, User2")
+        lambda r: r.instrument.has(Instrument.instrument_name == "instrument 1") & (r.users == "User1, User2")
     )
     assert len(found_runs) == 2
     assert TEST_RUN_1 in found_runs
     assert TEST_RUN_2 in found_runs
 
     found_runs = run_repo.find(
-        lambda r: r.instrument.has(Instrument.instrument_name == "instrument 2")
-        & (r.users == "User1, User2")
+        lambda r: r.instrument.has(Instrument.instrument_name == "instrument 2") & (r.users == "User1, User2")
     )
     assert len(found_runs) == 1
     assert TEST_RUN_3 in found_runs
@@ -263,8 +260,7 @@ def test_run_repo_find_with_or(run_repo):
     :return: None
     """
     found_runs = run_repo.find(
-        lambda r: (r.instrument.has(Instrument.instrument_name == "instrument 1"))
-        | (r.title == "Test Run 3")
+        lambda r: (r.instrument.has(Instrument.instrument_name == "instrument 1")) | (r.title == "Test Run 3")
     )
     assert len(found_runs) == 3
     assert TEST_RUN_1 in found_runs
