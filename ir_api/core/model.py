@@ -18,10 +18,10 @@ class ReductionState(enum.Enum):
     An enumeration representing the possible reduction states.
     """
 
-    Successful = "Successful"
-    Unsuccessful = "Unsuccessful"
-    Error = "Error"
-    NotStarted = "NotStarted"
+    SUCCESSFUL = "SUCCESSFUL"
+    UNSUCCESSFUL = "UNSUCCESSFUL"
+    ERROR = "ERROR"
+    NOT_STARTED = "NOT_STARTED"
 
 
 class Base(DeclarativeBase):
@@ -50,8 +50,8 @@ class Base(DeclarativeBase):
 run_reduction_junction_table = Table(
     "runs_reductions",
     Base.metadata,
-    Column("run", ForeignKey("runs.id")),
-    Column("reduction", ForeignKey("reductions.id")),
+    Column("run_id", ForeignKey("runs.id")),
+    Column("reduction_id", ForeignKey("reductions.id")),
 )
 
 
@@ -79,8 +79,8 @@ class Reduction(Base):
     reduction_status_message: Mapped[str] = mapped_column(String())
     reduction_inputs: Mapped[JSONB] = mapped_column(JSONB)
     reduction_outputs: Mapped[Optional[str]] = mapped_column(String())
-    script: Mapped[Optional[int]] = mapped_column(ForeignKey("scripts.id"))
-    script_relationship: Mapped[Optional["Script"]] = relationship("Script", lazy="subquery")
+    script_id: Mapped[Optional[int]] = mapped_column(ForeignKey("scripts.id"))
+    script: Mapped[Optional["Script"]] = relationship("Script", lazy="subquery")
     runs: Mapped[List[Run]] = relationship(
         secondary=run_reduction_junction_table, back_populates="reductions", lazy="subquery"
     )
@@ -119,8 +119,8 @@ class Run(Base):
     run_end: Mapped[datetime] = mapped_column(DateTime)
     good_frames: Mapped[int] = mapped_column(Integer())
     raw_frames: Mapped[int] = mapped_column(Integer())
-    instrument: Mapped[int] = mapped_column(ForeignKey("instruments.id"))
-    instrument_relationship: Mapped[Instrument] = relationship("Instrument", lazy="subquery")
+    instrument_id: Mapped[int] = mapped_column(ForeignKey("instruments.id"))
+    instrument: Mapped[Instrument] = relationship("Instrument", lazy="subquery")
     reductions: Mapped[List[Reduction]] = relationship(
         secondary=run_reduction_junction_table, back_populates="runs", lazy="subquery"
     )

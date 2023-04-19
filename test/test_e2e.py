@@ -25,7 +25,7 @@ TEST_REDUCTION = Reduction(
         "sum_runs": False,
         "runno": 25581,
     },
-    reduction_state=ReductionState.NotStarted,
+    reduction_state=ReductionState.NOT_STARTED,
 )
 TEST_RUN = Run(
     instrument=TEST_INSTRUMENT,

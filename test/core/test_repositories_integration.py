@@ -15,7 +15,7 @@ from ir_api.core.repositories import ScriptRepo, ENGINE, SESSION, ReductionRepo,
 TEST_SCRIPT = Script(value="print('Script 1')")
 TEST_REDUCTION = Reduction(
     reduction_start=datetime.utcnow(),
-    reduction_state=ReductionState.NotStarted,
+    reduction_state=ReductionState.NOT_STARTED,
     reduction_inputs={"input": "value"},
     script=TEST_SCRIPT,
 )
@@ -211,7 +211,7 @@ def test_reduction_repo_find(reduction_repo):
     :param reduction_repo: reduction repo fixture
     :return: None
     """
-    found_reductions = reduction_repo.find(lambda r: r.reduction_state == ReductionState.NotStarted)
+    found_reductions = reduction_repo.find(lambda r: r.reduction_state == ReductionState.NOT_STARTED)
     assert found_reductions[0] == TEST_REDUCTION
     assert len(found_reductions) == 1
 
@@ -227,7 +227,8 @@ def test_run_repo_find(run_repo):
     assert len(found_runs) == 1
 
     found_runs = run_repo.find(
-        lambda r: r.instrument_relationship.has(Instrument.instrument_name == "instrument 1") & (r.title == "Test Run 2")
+        lambda r: r.instrument_relationship.has(Instrument.instrument_name == "instrument 1")
+        & (r.title == "Test Run 2")
     )
     assert found_runs[0] == TEST_RUN_2
     assert len(found_runs) == 1
@@ -240,14 +241,16 @@ def test_run_repo_find_multiple_filters(run_repo):
     :return: None
     """
     found_runs = run_repo.find(
-        lambda r: r.instrument_relationship.has(Instrument.instrument_name == "instrument 1") & (r.users == "User1, User2")
+        lambda r: r.instrument_relationship.has(Instrument.instrument_name == "instrument 1")
+        & (r.users == "User1, User2")
     )
     assert len(found_runs) == 2
     assert TEST_RUN_1 in found_runs
     assert TEST_RUN_2 in found_runs
 
     found_runs = run_repo.find(
-        lambda r: r.instrument_relationship.has(Instrument.instrument_name == "instrument 2") & (r.users == "User1, User2")
+        lambda r: r.instrument_relationship.has(Instrument.instrument_name == "instrument 2")
+        & (r.users == "User1, User2")
     )
     assert len(found_runs) == 1
     assert TEST_RUN_3 in found_runs
@@ -275,7 +278,7 @@ def test_run_repo_find_with_reduction(run_repo):
     :param run_repo: run repo fixture
     :return: None
     """
-    found_runs = run_repo.find(lambda r: r.reductions.any(Reduction.reduction_state == ReductionState.NotStarted))
+    found_runs = run_repo.find(lambda r: r.reductions.any(Reduction.reduction_state == ReductionState.NOT_STARTED))
     assert len(found_runs) == 1
     assert TEST_RUN_1 in found_runs
 
