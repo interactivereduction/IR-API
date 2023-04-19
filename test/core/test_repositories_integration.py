@@ -12,7 +12,7 @@ from ir_api.core.repositories import ScriptRepo, ENGINE, SESSION, ReductionRepo,
 
 # pylint: disable = redefined-outer-name
 
-TEST_SCRIPT = Script(value="print('Script 1')")
+TEST_SCRIPT = Script(script="print('Script 1')")
 TEST_REDUCTION = Reduction(
     reduction_start=datetime.utcnow(),
     reduction_state=ReductionState.NOT_STARTED,
@@ -26,7 +26,7 @@ TEST_INSTRUMENT_2 = Instrument(instrument_name="instrument 2")
 TEST_RUN_1 = Run(
     filename="test_run",
     experiment_number=1,
-    experiment_title="Test Run",
+    title="Test Run",
     users="User1, User2",
     run_start=datetime.utcnow(),
     run_end=datetime.utcnow(),
@@ -37,7 +37,7 @@ TEST_RUN_1 = Run(
 TEST_RUN_2 = Run(
     filename="test_run",
     experiment_number=2,
-    experiment_title="Test Run 2",
+    title="Test Run 2",
     users="User1, User2",
     run_start=datetime.utcnow(),
     run_end=datetime.utcnow(),
@@ -48,7 +48,7 @@ TEST_RUN_2 = Run(
 TEST_RUN_3 = Run(
     filename="test_run",
     experiment_number=2,
-    experiment_title="Test Run 3",
+    title="Test Run 3",
     users="User1, User2",
     run_start=datetime.utcnow(),
     run_end=datetime.utcnow(),
@@ -64,7 +64,6 @@ def setup() -> None:
     Set up the test database before module
     :return: None
     """
-
     Base.metadata.drop_all(ENGINE)
     Base.metadata.create_all(ENGINE)
     TEST_RUN_1.reductions.append(TEST_REDUCTION)
@@ -199,7 +198,7 @@ def test_script_repo_find(script_repo):
     :param script_repo: ScriptRepo fixture
     :return: None
     """
-    found_scripts = script_repo.find(lambda s: s.script_id == "print('Script 1')")
+    found_scripts = script_repo.find(lambda s: s.script == "print('Script 1')")
 
     assert found_scripts[0] == TEST_SCRIPT
     assert len(found_scripts) == 1

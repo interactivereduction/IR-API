@@ -29,7 +29,7 @@ TEST_REDUCTION = Reduction(
 )
 TEST_RUN = Run(
     instrument=TEST_INSTRUMENT,
-    experiment_title="Whitebeam - vanadium - detector tests - vacuum bad - HT on not on all LAB",
+    title="Whitebeam - vanadium - detector tests - vacuum bad - HT on not on all LAB",
     experiment_number=1820497,
     filename="MAR25581.nxs",
     run_start="2019-03-22T10:15:44",

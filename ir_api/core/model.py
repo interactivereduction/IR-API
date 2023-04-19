@@ -73,10 +73,10 @@ class Reduction(Base):
     """
 
     __tablename__ = "reductions"
-    reduction_start: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
-    reduction_end: Mapped[Optional[datetime]] = mapped_column(DateTime(), nullable=True)
+    reduction_start: Mapped[datetime] = mapped_column(DateTime())
+    reduction_end: Mapped[Optional[datetime]] = mapped_column(DateTime())
     reduction_state: Mapped[ReductionState] = mapped_column(Enum(ReductionState))
-    reduction_status_message: Mapped[str] = mapped_column(String())
+    reduction_status_message: Mapped[Optional[str]] = mapped_column(String())
     reduction_inputs: Mapped[JSONB] = mapped_column(JSONB)
     reduction_outputs: Mapped[Optional[str]] = mapped_column(String())
     script_id: Mapped[Optional[int]] = mapped_column(ForeignKey("scripts.id"))
