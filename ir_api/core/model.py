@@ -73,7 +73,7 @@ class Reduction(Base):
     """
 
     __tablename__ = "reductions"
-    reduction_start: Mapped[datetime] = mapped_column(DateTime())
+    reduction_start: Mapped[Optional[datetime]] = mapped_column(DateTime())
     reduction_end: Mapped[Optional[datetime]] = mapped_column(DateTime())
     reduction_state: Mapped[ReductionState] = mapped_column(Enum(ReductionState))
     reduction_status_message: Mapped[Optional[str]] = mapped_column(String())
