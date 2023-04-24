@@ -32,6 +32,10 @@ Run on port 8080, by binding port 80 to port 8080 with a built container:
 docker run -p 8080:80 ghcr.io/interactivereduction/ir-api
 ```
 
+How to push the container to the Github container registry:
+```shell
+docker push ghcr.io/interactivereduction/ir-api -a
+```
 
 ## API Documentation
 Once deployed the auto generated api documentation is available at `/docs`. These can be used to inspect the API, and
@@ -59,7 +63,7 @@ For example:
 class YourInstrumentTransform(Transform):
     def apply(self, script: PreScript, reduction: Reduction) -> None:
         # Your script modification logic here e.g.
-        script.value = f"print('hello {reduction.reduction_inputs.get('user', 'world')}')"
+        script.script = f"print('hello {reduction.reduction_inputs.get('user', 'world')}')"
 ```
   - Update the get_transform_for_instrument factory function to return an instance of your new transform class when the 
 appropriate instrument is provided as input by adding a new case for your instrument in the match statement:

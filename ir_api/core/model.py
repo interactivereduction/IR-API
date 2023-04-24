@@ -18,10 +18,10 @@ class ReductionState(enum.Enum):
     An enumeration representing the possible reduction states.
     """
 
-    SUCCESSFUL = "Successful"
-    UNSUCCESSFUL = "Unsuccessful"
-    ERROR = "Error"
-    NOT_STARTED = "NotStarted"
+    SUCCESSFUL = "SUCCESSFUL"
+    UNSUCCESSFUL = "UNSUCCESSFUL"
+    ERROR = "ERROR"
+    NOT_STARTED = "NOT_STARTED"
 
 
 class Base(DeclarativeBase):
@@ -61,10 +61,10 @@ class Script(Base):
     """
 
     __tablename__ = "scripts"
-    value: Mapped[str] = mapped_column(String())
+    script: Mapped[str] = mapped_column(String())
 
     def __repr__(self) -> str:
-        return f"Script(id={self.id}, value='{self.value}')"
+        return f"Script(id={self.id}, value='{self.script}')"
 
 
 class Reduction(Base):
@@ -73,9 +73,10 @@ class Reduction(Base):
     """
 
     __tablename__ = "reductions"
-    reduction_start: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
-    reduction_end: Mapped[Optional[datetime]] = mapped_column(DateTime(), nullable=True)
+    reduction_start: Mapped[Optional[datetime]] = mapped_column(DateTime())
+    reduction_end: Mapped[Optional[datetime]] = mapped_column(DateTime())
     reduction_state: Mapped[ReductionState] = mapped_column(Enum(ReductionState))
+    reduction_status_message: Mapped[Optional[str]] = mapped_column(String())
     reduction_inputs: Mapped[JSONB] = mapped_column(JSONB)
     reduction_outputs: Mapped[Optional[str]] = mapped_column(String())
     script_id: Mapped[Optional[int]] = mapped_column(ForeignKey("scripts.id"))
@@ -112,7 +113,7 @@ class Run(Base):
     __tablename__ = "runs"
     filename: Mapped[str] = mapped_column(String())
     experiment_number: Mapped[int] = mapped_column(Integer())
-    experiment_title: Mapped[str] = mapped_column(String())
+    title: Mapped[str] = mapped_column(String())
     users: Mapped[str] = mapped_column(String())
     run_start: Mapped[datetime] = mapped_column(DateTime)
     run_end: Mapped[datetime] = mapped_column(DateTime)
@@ -126,7 +127,7 @@ class Run(Base):
 
     def __repr__(self) -> str:
         return (
-            f"Run(id={self.id}, filename={self.filename}, title={self.experiment_title}, users={self.users},"
-            f" run_start={self.run_start}, run_end={self.run_end}, good_frames={self.good_frames},"
-            f" raw_frames={self.raw_frames})"
+            f"Run(id={self.id}, filename={self.filename}, experiment_number={self.experiment_number}, "
+            f"title={self.title}, users={self.users}, run_start={self.run_start}, run_end={self.run_end}, "
+            f"good_frames={self.good_frames}, raw_frames={self.raw_frames}, instrument_id={self.instrument_id})"
         )

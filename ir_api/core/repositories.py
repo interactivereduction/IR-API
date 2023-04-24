@@ -4,10 +4,11 @@ database tables mapped to SQLAlchemy ORM models for the `Script`, `Reduction`, `
 and `Instrument` entities.
 """
 import logging
+import os
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar, Type, Optional, Callable, Sequence, Union
 
-from sqlalchemy import create_engine, select, LambdaElement, ColumnElement
+from sqlalchemy import create_engine, select, LambdaElement, ColumnElement, QueuePool
 from sqlalchemy.exc import MultipleResultsFound, NoResultFound
 from sqlalchemy.orm import sessionmaker
 
@@ -18,7 +19,14 @@ logger = logging.getLogger(__name__)
 
 T = TypeVar("T", bound=Base)
 
-ENGINE = create_engine("postgresql://postgres:password@localhost:5432/postgres")
+DB_USERNAME = os.environ.get("DB_USERNAME", "postgres")
+DB_PASSWORD = os.environ.get("DB_PASSWORD", "password")
+DB_IP = os.environ.get("DB_IP", "localhost")
+ENGINE = create_engine(
+    f"postgresql+psycopg2://{DB_USERNAME}:{DB_PASSWORD}@{DB_IP}:5432/interactive-reduction",
+    poolclass=QueuePool,
+    pool_size=20,
+)
 SESSION = sessionmaker(ENGINE)
 
 
