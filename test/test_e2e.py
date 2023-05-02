@@ -17,7 +17,7 @@ client = TestClient(app)
 TEST_INSTRUMENT = Instrument(instrument_name="mari")
 TEST_REDUCTION = Reduction(
     reduction_inputs={
-        "ei": "auto",
+        "ei": "'auto'",
         "sam_mass": 0.0,
         "sam_rmm": 0.0,
         "monovan": 0,
@@ -83,6 +83,7 @@ def test_get_default_mari_prescript():
         'with open("mari_res2013.map", "w+") as fle:\n'
         '    text = requests.get("https://raw.githubusercontent.com/pace-neutrons/InstrumentFiles/964733aec28b00b13f32fb61afa363a74dd62130/mari/mari_res2013.map").text\n'
         "    fle.write(text)\n"
+        "\n"
         "\n"
         "from mantid import config\n"
         "from MARIReduction_Sample import *\n"
@@ -190,6 +191,7 @@ def test_get_mari_prescript_for_reduction():
         '    text = requests.get("https://raw.githubusercontent.com/pace-neutrons/InstrumentFiles/964733aec28b00b13f32fb61afa363a74dd62130/mari/mari_res2013.map").text\n'
         "    fle.write(text)\n"
         "\n"
+        "\n"
         "from mantid import config\n"
         "from MARIReduction_Sample import *\n"
         "import time\n"
@@ -212,7 +214,7 @@ def test_get_mari_prescript_for_reduction():
         "\n"
         "# Run number and Ei\n"
         "runno = 25581\n"
-        "sum_runs=False\n"
+        "sum_runs = False\n"
         "ei = 'auto'\n"
         "\n"
         "# White vanadium run number\n"
