@@ -75,7 +75,7 @@ with open("MARIReduction_Sample.py", "w+") as fle:
     fle.write(text)
     
 with open("mask_file.xml", "w+" as fle:
-    text = requests.get("url_to_mask_file.xml).text
+    text = requests.get("url_to_mask_file.xml").text
     fle.write(text)
     
 with open("mari_res2013.map", "w+" as fle:
@@ -136,7 +136,7 @@ output_ws = iliad_mari(runno, ei, wbvan, monovan, sam_mass, sam_rmm, sum_runs, c
 #iliad_dos(runno, wbvan, ei, monovan, sam_mass, sam_rmm, sum_runs, background=bkgrun, temperature=5)
 
 # Output set for autoreduction
-output = [f'/output/{output_ws.getName()}.nxs']""",
+output = [f'/output/{output_ws.getName()}.nxs']\n""",
     }
 
 
