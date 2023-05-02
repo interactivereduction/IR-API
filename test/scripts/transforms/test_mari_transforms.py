@@ -125,12 +125,13 @@ def test_mari_transform_apply(script, reduction):
     original_lines = script.value.splitlines()
     transform.apply(script, reduction)
     updated_lines = script.value.splitlines()
-
+    print(updated_lines)
     assert len(original_lines) == len(updated_lines)
-
+    url_replaced = False
     for index, line in enumerate(updated_lines):
-        if line.startswith('\ttext = requests.get("url_to_mask_file.xml").text'):
-            pytest.fail("mask url was not replaced")
+        if '    text = requests.get("Some link").text' in line:
+            url_replaced = True
+            continue
         if line.startswith("runno"):
             assert line == "runno = 12345"
         elif line.startswith("sum_runs"):
@@ -147,3 +148,4 @@ def test_mari_transform_apply(script, reduction):
             assert line == "remove_bkg = False"
         else:
             assert line == original_lines[index]
+    assert url_replaced
