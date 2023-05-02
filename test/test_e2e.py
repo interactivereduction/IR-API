@@ -211,9 +211,9 @@ def test_get_mari_prescript_for_reduction():
         "    pass\n"
         "\n"
         "# Run number and Ei\n"
-        "runno=26644\n"
+        "runno = 25581\n"
         "sum_runs=False\n"
-        "ei=[30, 11.8]\n"
+        "ei = 'auto'\n"
         "\n"
         "# White vanadium run number\n"
         "wbvan=28580\n"
@@ -225,9 +225,9 @@ def test_get_mari_prescript_for_reduction():
         "#monovan=21803\n"
         "#sam_mass=41.104\n"
         "#sam_rmm=398.9439\n"
-        "monovan=0\n"
-        "sam_mass=0\n"
-        "sam_rmm=0\n"
+        "monovan = 0\n"
+        "sam_mass = 0.0\n"
+        "sam_rmm = 0.0\n"
         "\n"
         "# Set to true to remove the constant ToF background from the data.\n"
         "remove_bkg = True\n"
@@ -243,5 +243,5 @@ def test_get_mari_prescript_for_reduction():
         "#iliad_dos(runno, wbvan, ei, monovan, sam_mass, sam_rmm, sum_runs, background=bkgrun, temperature=5)\n"
         "\n"
         "# Output set for autoreduction\n"
-        "output = [f'/output/{output_ws.getName()}.nxs']\n",
+        "output = [f'/output/{output_ws.getName()}.nxs']",
     }
