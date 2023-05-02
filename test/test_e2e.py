@@ -2,7 +2,7 @@
 end-to-end tests
 """
 
-
+# pylint: disable=line-too-long
 from unittest.mock import patch
 
 import pytest
