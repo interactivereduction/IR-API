@@ -23,6 +23,12 @@ class MariTransform(Transform):
         lines = script.value.splitlines()
         # MyPY does not believe ColumnElement[JSONB] is indexable, despite JSONB implementing the Indexable mixin
         for index, line in enumerate(lines):
+            if line.startswith('\ttext = requests.get("url_to_mask_file.xml").text'):
+                line.replace(
+                    '\ttext = requests.get("url_to_mask_file.xml").text',
+                    f"\ttext = requests.get(\"{reduction.reduction_inputs['mask_file_link']}\").text",
+                )
+                continue
             if self._replace_input(line, lines, index, "runno", reduction.reduction_inputs["runno"]):  # type: ignore
                 continue
             if self._replace_input(line, lines, index, "sum_runs", reduction.reduction_inputs["sum_runs"]):  # type: ignore
