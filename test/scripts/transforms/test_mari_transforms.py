@@ -108,6 +108,7 @@ def reduction():
         "sam_mass": 30,
         "sam_rmm": 400,
         "remove_bkg": False,
+        "mask_file_link": "Some link",
     }
     return mock
 
