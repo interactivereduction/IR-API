@@ -24,7 +24,7 @@ class MariTransform(Transform):
         # MyPY does not believe ColumnElement[JSONB] is indexable, despite JSONB implementing the Indexable mixin
         for index, line in enumerate(lines):
             if "url_to_mask_file.xml" in line:
-                lines[index] = line.replace("url_to_mask_file.xml", reduction.reduction_inputs["mask_file_link"]) # type: ignore
+                lines[index] = line.replace("url_to_mask_file.xml", reduction.reduction_inputs["mask_file_link"])  # type: ignore
                 continue
             if self._replace_input(line, lines, index, "runno", reduction.reduction_inputs["runno"]):  # type: ignore
                 continue
