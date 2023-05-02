@@ -125,7 +125,6 @@ def test_mari_transform_apply(script, reduction):
     original_lines = script.value.splitlines()
     transform.apply(script, reduction)
     updated_lines = script.value.splitlines()
-    print(updated_lines)
     assert len(original_lines) == len(updated_lines)
     url_replaced = False
     for index, line in enumerate(updated_lines):
