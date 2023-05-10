@@ -32,6 +32,8 @@ class MariTransform(Transform):
                 continue
             if self._replace_input(line, lines, index, "ei", reduction.reduction_inputs["ei"]):  # type: ignore
                 continue
+            if self._replace_input(line, lines, index, "wbvan", reduction.reduction_inputs["wbvan"]):  # type: ignore
+                continue
             if self._replace_input(line, lines, index, "monovan", reduction.reduction_inputs["monovan"]):  # type: ignore
                 continue
             if self._replace_input(line, lines, index, "sam_mass", reduction.reduction_inputs["sam_mass"]):  # type: ignore
