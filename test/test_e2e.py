@@ -26,6 +26,7 @@ TEST_REDUCTION = Reduction(
         "runno": 25581,
         "mask_file_link": "https://raw.githubusercontent.com/pace-neutrons/InstrumentFiles/"
         "964733aec28b00b13f32fb61afa363a74dd62130/mari/mari_mask2023_1.xml",
+        "wbvan": 12345,
     },
     reduction_state=ReductionState.NOT_STARTED,
 )
@@ -218,7 +219,7 @@ def test_get_mari_prescript_for_reduction():
         "ei = 'auto'\n"
         "\n"
         "# White vanadium run number\n"
-        "wbvan=28580\n"
+        "wbvan = 12345\n"
         "\n"
         "# Default save directory (/output only for autoreduction as the RBNumber/autoreduced dir is mounted here)\n"
         "config['defaultsave.directory'] = '/output' #data_dir \n"

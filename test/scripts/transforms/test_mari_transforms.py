@@ -109,6 +109,7 @@ def reduction():
         "sam_rmm": 400,
         "remove_bkg": False,
         "mask_file_link": "Some link",
+        "wbvan": 12345,
     }
     return mock
 
@@ -137,6 +138,8 @@ def test_mari_transform_apply(script, reduction):
             assert line == "sum_runs = True"
         elif line.startswith("ei"):
             assert line == "ei = [50, 20]"
+        elif line.startswith("wbvan"):
+            assert line == "wbvan = 12345"
         elif line.startswith("monovan"):
             assert line == "monovan = 54321"
         elif line.startswith("sam_mass"):
