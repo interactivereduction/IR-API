@@ -26,6 +26,7 @@ ENGINE = create_engine(
     f"postgresql+psycopg2://{DB_USERNAME}:{DB_PASSWORD}@{DB_IP}:5432/interactive-reduction",
     poolclass=QueuePool,
     pool_size=20,
+    pool_pre_ping=True,
 )
 SESSION = sessionmaker(ENGINE)
 
