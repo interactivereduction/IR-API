@@ -6,7 +6,7 @@ dependencies = [
     "fastapi[all]==0.95.1",
     "psycopg2==2.9.6",
     "SQLAlchemy==2.0.15",
-    "pydantic==1.10.7",
+    "pydantic==1.10.8",
     "uvicorn==0.22.0",
     "requests==2.31.0"
 ]
