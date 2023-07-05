@@ -18,6 +18,7 @@ def test_get_transform_for_run_mari():
     transform = get_transform_for_instrument(instrument)
     assert isinstance(transform, MariTransform)
 
+
 def test_get_transform_for_run_test():
     """
     Test mari transform returned for mari
@@ -26,6 +27,7 @@ def test_get_transform_for_run_test():
     instrument = "test"
     transform = get_transform_for_instrument(instrument)
     assert isinstance(transform, TestTransform)
+
 
 def test_get_transform_for_run_unknown_instrument():
     """
