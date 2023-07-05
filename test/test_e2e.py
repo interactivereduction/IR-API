@@ -64,7 +64,7 @@ def test_get_default_test_prescript():
     Test obtaining of untransformed mari pre script
     :return: None
     """
-    response = client.get("/instrument/mari/script")
+    response = client.get("/instrument/test/script")
 
     assert response.status_code == 200
     assert response.json() == {
@@ -116,7 +116,7 @@ def test_get_mari_prescript_for_reduction():
     Test the return of transformed mari script
     :return: None
     """
-    response = client.get("/instrument/mari/script?reduction_id=1")
+    response = client.get("/instrument/test/script?reduction_id=1")
     assert response.status_code == 200
     assert response.json() == {
         "is_latest": True,
