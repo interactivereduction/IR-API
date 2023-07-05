@@ -1,3 +1,6 @@
+"""
+Test transform used in e2e
+"""
 from ir_api.core.model import Reduction
 from ir_api.scripts.pre_script import PreScript
 from ir_api.scripts.transforms.transform import Transform
