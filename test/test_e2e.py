@@ -121,7 +121,7 @@ def test_get_mari_prescript_for_reduction():
     assert response.json() == {
         "is_latest": True,
         "value": """# This line is inserted via test
-        from __future__ import print_function
+from __future__ import print_function
 
 
 x = 22
@@ -133,6 +133,5 @@ for i in range(20):
 def something() -> None:
     return
 
-something()
-""",
+something()""",
     }
