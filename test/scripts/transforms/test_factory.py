@@ -21,7 +21,7 @@ def test_get_transform_for_run_mari():
 
 def test_get_transform_for_run_test():
     """
-    Test mari transform returned for mari
+    Test that TestTransform returned for TestInstrument
     :return: None
     """
     instrument = "test"
