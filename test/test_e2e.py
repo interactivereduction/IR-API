@@ -14,7 +14,7 @@ from ir_api.ir_api import app
 
 client = TestClient(app)
 
-TEST_INSTRUMENT = Instrument(instrument_name="test                                  ")
+TEST_INSTRUMENT = Instrument(instrument_name="test")
 TEST_REDUCTION = Reduction(
     reduction_inputs={
         "ei": "'auto'",
