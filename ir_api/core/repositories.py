@@ -67,6 +67,7 @@ class ReadOnlyRepo(ABC, Generic[T]):
             try:
                 return session.execute(query).scalars().one()
             except NoResultFound:
+                logger.info("No result found for %s", self._model_type)
                 return None
             except MultipleResultsFound as exc:
                 logger.error("Non unique record found for filter: %s", filter_expression)
