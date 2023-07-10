@@ -96,9 +96,12 @@ def get_script_for_reduction(instrument: str, reduction_id: Optional[int] = None
     script = get_by_instrument_name(instrument)
     if reduction_id:
         reduction_repo = ReductionRepo()
+        logger.info("Querying for reduction: %s", reduction_id)
         reduction = reduction_repo.find_one(lambda r: r.id == reduction_id)
         if not reduction:
+            logger.info("Reduction not found")
             raise MissingRecordError(f"No reduction found with id: {reduction_id}")
+        logger.info("Reduction %s found", reduction_id)
         transform = get_transform_for_instrument(instrument)
         transform.apply(script, reduction)
 
