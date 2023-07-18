@@ -27,6 +27,7 @@ ENGINE = create_engine(
     poolclass=QueuePool,
     pool_size=20,
     pool_pre_ping=True,
+    pool_recycle=3600,
 )
 SESSION = sessionmaker(ENGINE)
 
