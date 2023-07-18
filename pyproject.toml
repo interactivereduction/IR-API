@@ -7,7 +7,7 @@ dependencies = [
     "psycopg2==2.9.6",
     "SQLAlchemy==2.0.19",
     "pydantic==2.0.3",
-    "uvicorn==0.22.0",
+    "uvicorn==0.23.1",
     "requests==2.31.0"
 ]
 
