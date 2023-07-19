@@ -8,7 +8,7 @@ import os
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar, Type, Optional, Callable, Sequence, Union
 
-from sqlalchemy import create_engine, select, LambdaElement, ColumnElement, QueuePool
+from sqlalchemy import create_engine, select, LambdaElement, ColumnElement, NullPool
 from sqlalchemy.exc import MultipleResultsFound, NoResultFound
 from sqlalchemy.orm import sessionmaker
 
@@ -24,10 +24,7 @@ DB_PASSWORD = os.environ.get("DB_PASSWORD", "password")
 DB_IP = os.environ.get("DB_IP", "localhost")
 ENGINE = create_engine(
     f"postgresql+psycopg2://{DB_USERNAME}:{DB_PASSWORD}@{DB_IP}:5432/interactive-reduction",
-    poolclass=QueuePool,
-    pool_size=20,
-    pool_pre_ping=True,
-    pool_recycle=3600,
+    poolclass=NullPool,
 )
 SESSION = sessionmaker(ENGINE)
 
