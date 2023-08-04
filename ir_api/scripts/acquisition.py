@@ -29,7 +29,7 @@ def _get_latest_commit_sha() -> Optional[str]:
 
         return response.json()["sha"] if response.ok else None
 
-    except Exception as exc:
+    except Exception as exc:  # pylint:disable=broad-exception-caught
         logger.exception(exc)
         logger.warning("Could not get latest commit sha ")
         return None
