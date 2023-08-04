@@ -1,6 +1,7 @@
 """
 end-to-end tests
 """
+import re
 
 # pylint: disable=line-too-long
 from unittest.mock import patch
@@ -58,6 +59,15 @@ def setup():
         session.refresh(TEST_REDUCTION)
 
 
+def assert_is_commit_sha(string: str) -> None:
+    """
+    assert given string is a commit sha
+    :param string: the string to check
+    :return: None
+    """
+    assert re.compile(r"/\b([a-f0-9]{40})\b/").match(string) is not None
+
+
 @patch("ir_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "ir_api/local_scripts")
 def test_get_default_test_prescript():
     """
@@ -67,9 +77,11 @@ def test_get_default_test_prescript():
     response = client.get("/instrument/test/script")
 
     assert response.status_code == 200
-    assert response.json() == {
-        "is_latest": True,
-        "value": """from __future__ import print_function
+    response_object = response.json()
+    assert response_object["is_latest"]
+    assert (
+        response_object["value"]
+        == """from __future__ import print_function
 
 print("Doing some science")
 
@@ -83,8 +95,9 @@ def something() -> None:
     return
 
 something()
-""",
-    }
+"""
+    )
+    assert_is_commit_sha(response_object["sha"])
 
 
 def test_get_default_prescript_instrument_does_not_exist():
