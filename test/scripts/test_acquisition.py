@@ -12,6 +12,7 @@ from ir_api.scripts.acquisition import (
     write_script_locally,
     get_by_instrument_name,
     get_script_for_reduction,
+    _get_latest_commit_sha,
 )
 from ir_api.scripts.pre_script import PreScript
 
@@ -192,3 +193,43 @@ def test_get_script_for_reduction_with_invalid_reduction_id(_, mock_repo):
         get_script_for_reduction(instrument, reduction_id)
 
     assert f"No reduction found with id: {reduction_id}" in str(excinfo.value)
+
+
+@patch("ir_api.scripts.acquisition.requests.get")
+def test_get_latest_commit_sha_ok(mock_get):
+    """
+    Test sha is returned when ok
+    :param mock_get: mocked get request
+    :return: None
+    """
+    mock_response = Mock()
+    mock_response.json.return_value = {"sha": "abcd1234"}
+    mock_get.return_value = mock_response
+
+    assert _get_latest_commit_sha() == "abcd1234"
+
+
+@patch("ir_api.scripts.acquisition.requests.get")
+def test_get_latest_commit_sha_not_ok(mock_get):
+    """
+    Test None is returned for non-ok get
+    :param mock_get: mocked get request
+    :return: None
+    """
+    mock_response = Mock()
+    mock_response.ok = False
+    mock_get.return_value = mock_response
+
+    assert _get_latest_commit_sha() is None
+
+
+@patch("ir_api.scripts.acquisition.requests.get")
+def test_get_latest_commit_sha_returns_none_on_exception(mock_get):
+    """
+    Test None is still returned if the request results in an exception
+    :param mock_get: Mock get
+    :return: None
+    """
+    mock_get.side_effect = Exception
+
+    assert _get_latest_commit_sha() is None

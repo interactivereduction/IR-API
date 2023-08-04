@@ -16,6 +16,25 @@ logger = logging.getLogger(__name__)
 LOCAL_SCRIPT_DIR = "ir_api/local_scripts"
 
 
+def _get_latest_commit_sha() -> Optional[str]:
+    """
+    Get the latest commit sha of the autoreduction-script repository
+    :return: (str) - the commit sha
+    """
+    try:
+        logger.info("Getting latest commit sha for autoreduction-script repo")
+        response = requests.get(
+            "https://api.github.com/repos/interactivereduction/autoreduction-scripts/commits/HEAD", timeout=30
+        )
+
+        return response.json()["sha"] if response.ok else None
+
+    except Exception as exc:
+        logger.exception(exc)
+        logger.warning("Could not get latest commit sha ")
+        return None
+
+
 def _get_script_from_remote(instrument: str) -> PreScript:
     """
     Get the remote script for given instrument
@@ -34,7 +53,8 @@ def _get_script_from_remote(instrument: str) -> PreScript:
             logger.warning("Could not get %s script from remote", instrument)
             raise RuntimeError(f"Could not get {instrument} script from remote")
         logger.info("Obtained %s script", instrument)
-        return PreScript(request.text, is_latest=True)
+        sha = _get_latest_commit_sha()
+        return PreScript(request.text, is_latest=True, sha=sha)
 
     except ConnectionError:
         # log exception
