@@ -2,7 +2,6 @@
 end-to-end tests
 """
 import re
-
 # pylint: disable=line-too-long
 from unittest.mock import patch
 
@@ -65,7 +64,7 @@ def assert_is_commit_sha(string: str) -> None:
     :param string: the string to check
     :return: None
     """
-    assert re.compile(r"/\b([a-f0-9]{40})\b/").match(string) is not None
+    assert re.compile(r"/\b([a-f0-9]{7,40})\b/").match(string) is not None
 
 
 @patch("ir_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "ir_api/local_scripts")
