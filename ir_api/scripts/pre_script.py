@@ -1,6 +1,8 @@
 """
 PreScript contains the PreScript definition. As it is not strictly a model, it does not belong in models.py
 """
+from typing import Optional
+
 from ir_api.core.responses import PreScriptResponse
 
 
@@ -10,10 +12,11 @@ class PreScript:
     database.
     """
 
-    def __init__(self, value: str, is_latest: bool = False):
+    def __init__(self, value: str, is_latest: bool = False, sha: Optional[str] = None):
         self.value = value
         self._original_value = value
         self.is_latest = is_latest
+        self.sha: Optional[str] = sha
 
     @property
     def original_value(self) -> str:
@@ -28,7 +31,7 @@ class PreScript:
         Return a ScriptResponse model to be returned by the api
         :return: ScriptResponse - the ScriptResponse
         """
-        return PreScriptResponse(value=self.value, is_latest=self.is_latest)
+        return PreScriptResponse(value=self.value, is_latest=self.is_latest, sha=self.sha)
 
     def __repr__(self) -> str:
         return f"PreScript(value={self.value}, is_latest={self.is_latest})"
