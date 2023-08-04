@@ -2,6 +2,7 @@
 end-to-end tests
 """
 import re
+
 # pylint: disable=line-too-long
 from unittest.mock import patch
 
@@ -150,4 +151,3 @@ def something() -> None:
 
 something()"""
     )
-
