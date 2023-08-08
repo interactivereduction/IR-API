@@ -62,6 +62,7 @@ class Script(Base):
 
     __tablename__ = "scripts"
     script: Mapped[str] = mapped_column(String())
+    sha: Mapped[str] = mapped_column(String())
 
     def __repr__(self) -> str:
         return f"Script(id={self.id}, value='{self.script}')"

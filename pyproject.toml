@@ -36,7 +36,8 @@ code-inspection = [
 
 dev = [
     "ir-api[code-inspection]",
-    "ir-api[formatting]"
+    "ir-api[formatting]",
+    "Faker==19.3.0"
 ]
 
 
