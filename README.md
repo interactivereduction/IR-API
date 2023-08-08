@@ -45,6 +45,13 @@ can be used to try out each endpoint, which is useful for some manual testing an
 To run the integration and e2e tests, a postgres database is expected at localhost:5432 with user: postgres 
 password:password
 
+## Routers
+
+
+## Exception Handlers
+
+
+
 ## Transforms Overview
 
 Transforms are used to apply modifications to instrument scripts based on reduction input parameters. They enable you to
@@ -88,4 +95,5 @@ However, this trimmed down implementation does offer the other benefits of the p
 drawbacks. It provides a unified data access api, which significantly reduces complexity in querying data and testing
 while mocking data access. By being trimmed down, the increased complexity that can arise from the implementation of 
 model mappers/transformers is reduced.  
+
 
