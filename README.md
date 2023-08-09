@@ -46,10 +46,14 @@ To run the integration and e2e tests, a postgres database is expected at localho
 password:password
 
 ## Routers
-
+The endpoint functions are in the `routers.py` module. If this module grows to an unmanageable size this can be split up
+into a package and seperate `router` objects can be created with different rules such as path prefixes. More on this can
+be found in the FastAPI documentation
 
 ## Exception Handlers
-
+By default if an exception is not handled the API will return a 500 - internal server error. It is possible to define 
+custom exception handlers to prevent 500 status codes for certain exceptions. These handlers are defined in the
+`exception_handlers.py` module, and must be registered to the app in the `ir_api.py` module.
 
 
 ## Transforms Overview
