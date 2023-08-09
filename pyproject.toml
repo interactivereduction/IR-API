@@ -31,7 +31,7 @@ code-inspection = [
     "mypy==1.4.1",
     "ir-api[test]",
     "types-requests==2.31.0.2",
-    "types-urllib3==1.26.25.13"
+    "types-urllib3==1.26.25.14"
 ]
 
 dev = [
