@@ -45,6 +45,17 @@ can be used to try out each endpoint, which is useful for some manual testing an
 To run the integration and e2e tests, a postgres database is expected at localhost:5432 with user: postgres 
 password:password
 
+## Routers
+The endpoint functions are in the `routers.py` module. If this module grows to an unmanageable size this can be split up
+into a package and seperate `router` objects can be created with different rules such as path prefixes. More on this can
+be found in the FastAPI documentation
+
+## Exception Handlers
+By default if an exception is not handled the API will return a 500 - internal server error. It is possible to define 
+custom exception handlers to prevent 500 status codes for certain exceptions. These handlers are defined in the
+`exception_handlers.py` module, and must be registered to the app in the `ir_api.py` module.
+
+
 ## Transforms Overview
 
 Transforms are used to apply modifications to instrument scripts based on reduction input parameters. They enable you to
@@ -88,4 +99,5 @@ However, this trimmed down implementation does offer the other benefits of the p
 drawbacks. It provides a unified data access api, which significantly reduces complexity in querying data and testing
 while mocking data access. By being trimmed down, the increased complexity that can arise from the implementation of 
 model mappers/transformers is reduced.  
+
 
