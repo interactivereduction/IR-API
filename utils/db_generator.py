@@ -33,7 +33,6 @@ class InteractiveReductionProvider(BaseProvider):
         "INES",
         "INTER",
         "IRIS",
-        "LAD",
         "LARMOR",
         "LET",
         "LOQ",
