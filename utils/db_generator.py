@@ -136,18 +136,23 @@ class InteractiveReductionProvider(BaseProvider):
         return reduction
 
 
-ir_provider = InteractiveReductionProvider(faker)
+def main():
+    ir_provider = InteractiveReductionProvider(faker)
 
-Base.metadata.drop_all(ENGINE)
-Base.metadata.create_all(ENGINE)
+    Base.metadata.drop_all(ENGINE)
+    Base.metadata.create_all(ENGINE)
 
-with SESSION() as session:
-    instruments = []
-    for instrument in InteractiveReductionProvider.INSTRUMENTS:
-        instrument_ = Instrument()
-        instrument_.instrument_name = instrument
-        instruments.append(instrument_)
+    with SESSION() as session:
+        instruments = []
+        for instrument in InteractiveReductionProvider.INSTRUMENTS:
+            instrument_ = Instrument()
+            instrument_.instrument_name = instrument
+            instruments.append(instrument_)
 
-    for i in range(10000):
-        session.add(ir_provider.insertable_reduction(random.choice(instruments)))
-    session.commit()
+        for i in range(10000):
+            session.add(ir_provider.insertable_reduction(random.choice(instruments)))
+        session.commit()
+
+
+if __name__ == "__main__":
+    main()
