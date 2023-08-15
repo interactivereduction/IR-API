@@ -24,7 +24,6 @@ class InteractiveReductionProvider(BaseProvider):
         "CRISP",
         "EMU",
         "ENGINX",
-        "EVS",
         "GEM",
         "HET",
         "HIFI",
