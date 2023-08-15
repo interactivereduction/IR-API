@@ -49,7 +49,6 @@ class InteractiveReductionProvider(BaseProvider):
         "PEARL",
         "POLARIS",
         "POLREF",
-        "PRISMA",
         "SANDALS",
         "SANS2D",
         "SURF",
