@@ -22,7 +22,6 @@ class InteractiveReductionProvider(BaseProvider):
         "CHIPIR",
         "CHRONUS",
         "CRISP",
-        "DEVA",
         "EMMAA",
         "EMU",
         "ENGINX",
