@@ -61,9 +61,9 @@ class InteractiveReductionProvider(BaseProvider):
             faker.pyint(min_value=2017, max_value=2023),
             faker.pyint(min_value=1, max_value=12),
             faker.pyint(min_value=1, max_value=28),
-            faker.pyint(min_value=1, max_value=23),
-            faker.pyint(min_value=1, max_value=59),
-            faker.pyint(min_value=1, max_value=59),
+            faker.pyint(min_value=0, max_value=23),
+            faker.pyint(min_value=0, max_value=59),
+            faker.pyint(min_value=0, max_value=59),
         )
 
     def instrument(self) -> Instrument:
