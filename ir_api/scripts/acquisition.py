@@ -2,6 +2,7 @@
 Acquisition module contains all the functionality for obtaining the script locally and from the remote repository
 """
 import logging
+import os
 from typing import Optional
 
 import requests
@@ -54,6 +55,8 @@ def _get_script_from_remote(instrument: str) -> PreScript:
             raise RuntimeError(f"Could not get {instrument} script from remote")
         logger.info("Obtained %s script", instrument)
         sha = _get_latest_commit_sha()
+        if sha is not None:
+            os.environ["sha"] = sha
         return PreScript(request.text, is_latest=True, sha=sha)
 
     except ConnectionError:
@@ -71,7 +74,7 @@ def _get_script_locally(instrument: str) -> PreScript:
     try:
         logger.info("Attempting to get %s script locally...", instrument)
         with open(f"{LOCAL_SCRIPT_DIR}/{instrument}.py", "r", encoding="utf-8") as fle:
-            return PreScript(value="".join(line for line in fle))
+            return PreScript(value="".join(line for line in fle), sha=os.environ.get("sha", None))
     except FileNotFoundError as exc:
         logger.exception("Could not retrieve %s script locally", instrument)
         raise MissingScriptError(f"Unable to load any script for instrument: {instrument}") from exc
