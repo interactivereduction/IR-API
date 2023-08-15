@@ -1,6 +1,7 @@
 """
 Tests for script acquisition
 """
+import os
 from unittest.mock import Mock, patch, mock_open, MagicMock
 
 import pytest
@@ -12,6 +13,7 @@ from ir_api.scripts.acquisition import (
     write_script_locally,
     get_by_instrument_name,
     get_script_for_reduction,
+    _get_latest_commit_sha,
 )
 from ir_api.scripts.pre_script import PreScript
 
@@ -29,6 +31,42 @@ def mock_response():
     response.status_code = 200
     response.text = "test script content"
     return response
+
+
+@patch("requests.get")
+@patch("ir_api.scripts.acquisition._get_latest_commit_sha")
+def test_sha_env_set_when_sha_present(mock_sha, mock_get, mock_response):
+    """Test that environment variable is set when sha is not None."""
+    mock_sha.return_value = "valid_sha"
+    mock_get.return_value = mock_response
+
+    _get_script_from_remote(INSTRUMENT)
+
+    assert os.environ["sha"] == "valid_sha"
+
+
+@patch("requests.get")
+@patch("ir_api.scripts.acquisition.os.environ.__setitem__")
+@patch("ir_api.scripts.acquisition._get_latest_commit_sha")
+def test_sha_env_not_set_when_sha_none(mock_sha, mock_setitem, mock_get, mock_response):
+    """Test that environment variable is not set when sha is None."""
+    mock_sha.return_value = None
+    mock_get.return_value = mock_response
+
+    _get_script_from_remote(INSTRUMENT)
+
+    mock_setitem.assert_not_called()
+
+
+@patch("requests.get")
+@patch("ir_api.scripts.acquisition._get_latest_commit_sha")
+def test_prescript_sha_assigned_correctly(mock_sha, mock_get, mock_response):
+    """Test that the sha attribute of the PreScript object is assigned the correct value."""
+    mock_sha.return_value = "valid_sha"
+    mock_get.return_value = mock_response
+
+    result = _get_script_from_remote(INSTRUMENT)
+    assert result.sha == "valid_sha"
 
 
 @patch("requests.get")
@@ -192,3 +230,43 @@ def test_get_script_for_reduction_with_invalid_reduction_id(_, mock_repo):
         get_script_for_reduction(instrument, reduction_id)
 
     assert f"No reduction found with id: {reduction_id}" in str(excinfo.value)
+
+
+@patch("ir_api.scripts.acquisition.requests.get")
+def test_get_latest_commit_sha_ok(mock_get):
+    """
+    Test sha is returned when ok
+    :param mock_get: mocked get request
+    :return: None
+    """
+    mock_response = Mock()
+    mock_response.json.return_value = {"sha": "abcd1234"}
+    mock_get.return_value = mock_response
+
+    assert _get_latest_commit_sha() == "abcd1234"
+
+
+@patch("ir_api.scripts.acquisition.requests.get")
+def test_get_latest_commit_sha_not_ok(mock_get):
+    """
+    Test None is returned for non-ok get
+    :param mock_get: mocked get request
+    :return: None
+    """
+    mock_response = Mock()
+    mock_response.ok = False
+    mock_get.return_value = mock_response
+
+    assert _get_latest_commit_sha() is None
+
+
+@patch("ir_api.scripts.acquisition.requests.get")
+def test_get_latest_commit_sha_returns_none_on_exception(mock_get):
+    """
+    Test None is still returned if the request results in an exception
+    :param mock_get: Mock get
+    :return: None
+    """
+    mock_get.side_effect = Exception
+
+    assert _get_latest_commit_sha() is None

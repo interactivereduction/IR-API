@@ -3,6 +3,8 @@ responses module contains api response definitions
 """
 from __future__ import annotations
 
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -21,3 +23,4 @@ class PreScriptResponse(BaseModel):
 
     value: str
     is_latest: bool
+    sha: Optional[str] = None

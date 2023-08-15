@@ -2,6 +2,7 @@
 Acquisition module contains all the functionality for obtaining the script locally and from the remote repository
 """
 import logging
+import os
 from typing import Optional
 
 import requests
@@ -14,6 +15,25 @@ from ir_api.scripts.transforms.factory import get_transform_for_instrument
 logger = logging.getLogger(__name__)
 
 LOCAL_SCRIPT_DIR = "ir_api/local_scripts"
+
+
+def _get_latest_commit_sha() -> Optional[str]:
+    """
+    Get the latest commit sha of the autoreduction-script repository
+    :return: (str) - the commit sha
+    """
+    try:
+        logger.info("Getting latest commit sha for autoreduction-script repo")
+        response = requests.get(
+            "https://api.github.com/repos/interactivereduction/autoreduction-scripts/commits/HEAD", timeout=30
+        )
+
+        return response.json()["sha"] if response.ok else None
+
+    except Exception as exc:  # pylint:disable=broad-exception-caught
+        logger.exception(exc)
+        logger.warning("Could not get latest commit sha ")
+        return None
 
 
 def _get_script_from_remote(instrument: str) -> PreScript:
@@ -34,7 +54,10 @@ def _get_script_from_remote(instrument: str) -> PreScript:
             logger.warning("Could not get %s script from remote", instrument)
             raise RuntimeError(f"Could not get {instrument} script from remote")
         logger.info("Obtained %s script", instrument)
-        return PreScript(request.text, is_latest=True)
+        sha = _get_latest_commit_sha()
+        if sha is not None:
+            os.environ["sha"] = sha
+        return PreScript(request.text, is_latest=True, sha=sha)
 
     except ConnectionError:
         # log exception
@@ -51,7 +74,7 @@ def _get_script_locally(instrument: str) -> PreScript:
     try:
         logger.info("Attempting to get %s script locally...", instrument)
         with open(f"{LOCAL_SCRIPT_DIR}/{instrument}.py", "r", encoding="utf-8") as fle:
-            return PreScript(value="".join(line for line in fle))
+            return PreScript(value="".join(line for line in fle), sha=os.environ.get("sha", None))
     except FileNotFoundError as exc:
         logger.exception("Could not retrieve %s script locally", instrument)
         raise MissingScriptError(f"Unable to load any script for instrument: {instrument}") from exc
