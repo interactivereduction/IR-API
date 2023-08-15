@@ -3,7 +3,6 @@ Script to generate a database for a development environment
 """
 import random
 from datetime import datetime, timedelta
-from typing import Tuple
 
 from faker import Faker
 from faker.providers import BaseProvider
@@ -14,10 +13,6 @@ from ir_api.core.repositories import SESSION, ENGINE
 random.seed(1)
 Faker.seed(1)
 faker = Faker()
-
-
-def random_datetime_pair() -> Tuple[datetime, datetime]:
-    pass
 
 
 class InteractiveReductionProvider(BaseProvider):
