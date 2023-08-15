@@ -100,4 +100,31 @@ drawbacks. It provides a unified data access api, which significantly reduces co
 while mocking data access. By being trimmed down, the increased complexity that can arise from the implementation of 
 model mappers/transformers is reduced.  
 
+## Database Generation Script for Development Environment
+### Overview
 
+This script is designed to generate a mock database for the development environment. It populates the database with 
+random but realistic data related to a set of instruments and their associated runs, reductions, and scripts. This 
+allows developers to easily simulate a real-world scenario, thereby making local development and testing more efficient 
+and effective.
+
+### How to Use
+With a postgres database running, execute the script, navigate to the script’s directory and run it using Python:
+
+`python db_generator.py`
+
+### What the Script Does
+When executed, the script performs the following actions:
+
+1. Database Reset: It first clears the existing tables in the database, ensuring a clean slate.
+2. Instrument Generation: Populates the database with a predefined list of instruments.
+3. Data Generation: For each instrument, it generates:
+   - Random runs with various attributes like start and end times, number of frames, experiment number, and associated users.
+   - Reduction entries with various states, input parameters, and (optionally) output parameters.
+   - Script entries with a SHA-1 hash and a simple script content.
+   - Data Insertion: Inserts 10,000 of these randomly generated 'reduction' entries, each associated with random instrument entries, into the database.
+
+### Note
+The script is seeded with a constant seed value (in this case 1), which means that every time you run the script, 
+it will generate the same random data. If you want different random data each time, you can remove or change the seed 
+value.
