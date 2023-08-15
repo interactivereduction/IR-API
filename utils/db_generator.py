@@ -55,7 +55,6 @@ class InteractiveReductionProvider(BaseProvider):
         "SANS2D",
         "SURF",
         "SXD",
-        "TFXA",
         "TOSCA",
         "VESUVIO",
         "WISH",
