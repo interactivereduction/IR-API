@@ -48,7 +48,6 @@ class InteractiveReductionProvider(BaseProvider):
         "OFFSPEC",
         "OSIRIS",
         "PEARL",
-        "PEARL (HIPR)",
         "POLARIS",
         "POLREF",
         "PRISMA",
