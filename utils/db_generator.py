@@ -50,7 +50,6 @@ class InteractiveReductionProvider(BaseProvider):
         "POLARIS",
         "POLREF",
         "PRISMA",
-        "ROTAX",
         "SANDALS",
         "SANS2D",
         "SURF",
