@@ -2,16 +2,16 @@
 end-to-end tests
 """
 import re
-
 # pylint: disable=line-too-long
 from unittest.mock import patch
 
 import pytest
 from starlette.testclient import TestClient
 
-from ir_api.core.model import Base, Instrument, Run, Reduction, ReductionState
-from ir_api.core.repositories import ENGINE, SESSION
+from ir_api.core.model import Instrument, Run, Reduction, ReductionState
+from ir_api.core.repositories import SESSION
 from ir_api.ir_api import app
+from utils.db_generator import main as generate_db
 
 client = TestClient(app)
 
@@ -51,8 +51,7 @@ def setup():
     Setup database pre testing
     :return:
     """
-    Base.metadata.drop_all(ENGINE)
-    Base.metadata.create_all(ENGINE)
+    generate_db()
     with SESSION() as session:
         session.add(TEST_REDUCTION)
         session.commit()
