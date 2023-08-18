@@ -26,16 +26,16 @@ def get_reductions_by_instrument(instrument: str, limit: int = 0, offset: int = 
     )
 
 
-def get_reduction_by_id(id: int) -> Reduction:
+def get_reduction_by_id(reduction_id: int) -> Reduction:
     """
     Given an ID return the reduction with that ID
-    :param id: The id of the reduction to search for
+    :param reduction_id: The id of the reduction to search for
     :return: The reduction
     :raises: MissingRecordError when no reduction for that ID is found
     """
-    reduction = _REDUCTION_REPO.find_one(lambda reduction: reduction.id == id)
+    reduction = _REDUCTION_REPO.find_one(lambda reduction: reduction.id == reduction_id)
     if reduction is None:
-        raise MissingRecordError(f"No Reduction for id {id}")
+        raise MissingRecordError(f"No Reduction for id {reduction_id}")
     return reduction
 
 
