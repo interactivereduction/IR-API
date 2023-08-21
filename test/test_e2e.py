@@ -2,21 +2,19 @@
 end-to-end tests
 """
 import re
-
 # pylint: disable=line-too-long
 from unittest.mock import patch
 
 import pytest
 from starlette.testclient import TestClient
 
-from ir_api.core.model import Instrument, Run, Reduction, ReductionState
-from ir_api.core.repositories import SESSION
+from ir_api.core.model import Instrument, Run, Reduction, ReductionState, Base
+from ir_api.core.repositories import SESSION, ENGINE
 from ir_api.ir_api import app
-from utils.db_generator import main as generate_db
 
 client = TestClient(app)
 
-TEST_INSTRUMENT = Instrument(instrument_name="test")
+TEST_INSTRUMENT = Instrument(instrument_name="TEST")
 TEST_REDUCTION = Reduction(
     reduction_inputs={
         "ei": "'auto'",
@@ -52,7 +50,8 @@ def setup():
     Setup database pre testing
     :return:
     """
-    generate_db()
+    Base.metadata.drop_all(ENGINE)
+    Base.metadata.create_all(ENGINE)
     with SESSION() as session:
         session.add(TEST_REDUCTION)
         session.commit()
@@ -131,26 +130,37 @@ def test_get_reduction_by_id_reduction_exists():
     assert response.status_code == 200
     assert response.json() == {
         "id": 1,
-        "reduction_end": "2021-02-09T03:59:48",
-        "reduction_inputs": {"age": "WtlvblwzmmlxpbRCHjZS", "agree": "MUYAYAVjoYzWuSyMvItT", "rate": True},
-        "reduction_outputs": "What should this be?",
-        "reduction_start": "2021-02-09T03:31:48",
-        "reduction_state": "UNSUCCESSFUL",
-        "reduction_status_message": "Prepare small behind agreement structure item several able knowledge return director war.",
+        "reduction_end": None,
+        "reduction_inputs": {
+            "ei": "'auto'",
+            "sam_mass": 0.0,
+            "sam_rmm": 0.0,
+            "monovan": 0,
+            "remove_bkg": True,
+            "sum_runs": False,
+            "runno": 25581,
+            "mask_file_link": "https://raw.githubusercontent.com/pace-neutrons/InstrumentFiles/"
+            "964733aec28b00b13f32fb61afa363a74dd62130/mari/mari_mask2023_1.xml",
+            "wbvan": 12345,
+        },
+        "reduction_outputs": None,
+        "reduction_start": None,
+        "reduction_state": "NOT_STARTED",
+        "reduction_status_message": None,
         "runs": [
             {
-                "experiment_number": 61544,
-                "filename": "/archive/NDXHET/Instrument/data/cycle_17_03/HET61544.nxs",
-                "good_frames": 4011,
-                "instrument_name": "HET",
-                "raw_frames": 7070,
-                "run_end": "2020-11-17T04:22:10",
-                "run_start": "2020-11-17T03:49:10",
-                "title": "Light final summer pass official positive.",
-                "users": "Jeremy Smith, James Mora",
+                "experiment_number": 1820497,
+                "filename": "MAR25581.nxs",
+                "good_frames": 6452,
+                "instrument_name": "TEST",
+                "raw_frames": 8067,
+                "run_end": "2019-03-22T10:18:26",
+                "run_start": "2019-03-22T10:15:44",
+                "title": "Whitebeam - vanadium - detector tests - vacuum bad - HT on not on all LAB",
+                "users": "Wood,Guidi,Benedek,Mansson,Juranyi,Nocerino,Forslund,Matsubara",
             }
         ],
-        "script": {"value": "import os\nprint('foo')\n"},
+        "script": None,
     }
 
 
@@ -200,18 +210,29 @@ def test_get_reductions_for_experiment_number():
     Test reduction returned for experiment
     :return:
     """
-    response = client.get("/experiment/36803/reductions")
+    response = client.get("/experiment/1820497/reductions")
     assert response.status_code == 200
     assert response.json() == [
         {
-            "id": 2133,
-            "reduction_end": "2020-10-04T07:45:05",
-            "reduction_inputs": {"figure": "YinqTBddoeJWMVahyATY", "focus": -73552971014.5794},
-            "reduction_outputs": "What should this be?",
-            "reduction_start": "2020-10-04T07:20:05",
-            "reduction_state": "SUCCESSFUL",
-            "reduction_status_message": "Open for add face receive force fly always nature.",
-            "script": {"value": "import os\nprint('foo')\n"},
+            "id": 1,
+            "reduction_end": None,
+            "reduction_inputs": {
+                "ei": "'auto'",
+                "mask_file_link": "https://raw.githubusercontent.com/pace-neutrons/InstrumentFiles/"
+                "964733aec28b00b13f32fb61afa363a74dd62130/mari/mari_mask2023_1.xml",
+                "monovan": 0,
+                "remove_bkg": True,
+                "runno": 25581,
+                "sam_mass": 0.0,
+                "sam_rmm": 0.0,
+                "sum_runs": False,
+                "wbvan": 12345,
+            },
+            "reduction_outputs": None,
+            "reduction_start": None,
+            "reduction_state": "NOT_STARTED",
+            "reduction_status_message": None,
+            "script": None,
         }
     ]
 
@@ -227,57 +248,30 @@ def test_get_reductions_for_experiment_number_does_not_exist():
 
 
 def test_get_reductions_for_instrument_reductions_exist():
-    response = client.get("/instrument/MARI/reductions?limit=3")
+    response = client.get("/instrument/test/reductions?limit=3")
     assert response.status_code == 200
     assert response.json() == [
         {
-            "id": 7107,
+            "id": 1,
             "reduction_end": None,
             "reduction_inputs": {
-                "candidate": "RopSkhiHRdTOkfKlDTxS",
-                "data": 1068,
-                "foot": "xlypwBpsPGhzvRYMjclo",
-                "improve": False,
-                "in": "kxrFULFuYAGlwjjLwEXK",
-                "official": 2194,
-                "per": "DBXYUThgatRmqOwzOhge",
-                "sound": 19863726282.8752,
-                "up": True,
-                "whatever": "afXkrONWBczHRtfkSHBy",
+                "ei": "'auto'",
+                "mask_file_link": "https://raw.githubusercontent.com/pace-neutrons/InstrumentFiles/"
+                "964733aec28b00b13f32fb61afa363a74dd62130/mari/mari_mask2023_1.xml",
+                "monovan": 0,
+                "remove_bkg": True,
+                "runno": 25581,
+                "sam_mass": 0.0,
+                "sam_rmm": 0.0,
+                "sum_runs": False,
+                "wbvan": 12345,
             },
             "reduction_outputs": None,
             "reduction_start": None,
             "reduction_state": "NOT_STARTED",
             "reduction_status_message": None,
-            "script": {"value": "import os\nprint('foo')\n"},
-        },
-        {
-            "id": 9882,
-            "reduction_end": "2019-02-27T07:17:09",
-            "reduction_inputs": {"growth": 4986, "make": -94539028.1069814},
-            "reduction_outputs": "What should this be?",
-            "reduction_start": "2019-02-27T07:02:09",
-            "reduction_state": "ERROR",
-            "reduction_status_message": "Speech clear education onto stay throughout face huge class.",
-            "script": {"value": "import os\nprint('foo')\n"},
-        },
-        {
-            "id": 7272,
-            "reduction_end": "2019-11-28T23:58:47",
-            "reduction_inputs": {
-                "her": 3159459467009.81,
-                "level": 7122,
-                "loss": "eHKbuJDBTlKMMYyYomdw",
-                "natural": -49.4505509648397,
-                "trade": 6447883.13642678,
-                "white": "KUtEOLGYqqAEJLRXSWWi",
-            },
-            "reduction_outputs": "What should this be?",
-            "reduction_start": "2019-11-28T23:14:47",
-            "reduction_state": "SUCCESSFUL",
-            "reduction_status_message": "Or not option history rate manager cover time own artist various ask.",
-            "script": {"value": "import os\nprint('foo')\n"},
-        },
+            "script": None,
+        }
     ]
 
 
@@ -286,6 +280,6 @@ def test_reductions_by_instrument_no_reductions():
     Test empty array returned when no reductions for instrument
     :return:
     """
-    response = client.get("/instrument/test/reductions?limit=3")
+    response = client.get("/instrument/foo/reductions?limit=3")
     assert response.status_code == 200
     assert response.json() == []
