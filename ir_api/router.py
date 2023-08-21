@@ -6,7 +6,11 @@ from typing import Optional, List
 from fastapi import APIRouter
 from starlette.background import BackgroundTasks
 
-from ir_api.core.responses import PreScriptResponse, ReductionResponse, ReductionWithRunsResponse
+from ir_api.core.responses import (
+    PreScriptResponse,
+    ReductionResponse,
+    ReductionWithRunsResponse,
+)
 from ir_api.core.services.reduction import (
     get_reductions_by_instrument,
     get_reduction_by_id,
@@ -20,7 +24,9 @@ ROUTER = APIRouter()
 
 @ROUTER.get("/instrument/{instrument}/script")
 async def get_pre_script(
-    instrument: str, background_tasks: BackgroundTasks, reduction_id: Optional[int] = None
+    instrument: str,
+    background_tasks: BackgroundTasks,
+    reduction_id: Optional[int] = None,
 ) -> PreScriptResponse:
     """
     Script URI - Not intended for calling
@@ -40,11 +46,14 @@ async def get_pre_script(
 
 
 @ROUTER.get("/instrument/{instrument}/reductions")
-async def get_reductions_for_instrument(instrument: str, limit: int = 0, offset: int = 0) -> List[ReductionResponse]:
+async def get_reductions_for_instrument(
+    instrument: str, limit: int = 0, offset: int = 0
+) -> List[ReductionResponse]:
     """
     Retrieve a list of reductions for a given instrument.
     :param instrument: the name of the instrument
-    :param limit: optional limit for the number of reductions returned (default is 0, which can be interpreted as no limit)
+    :param limit: optional limit for the number of reductions returned (default is 0, which can be interpreted as
+    no limit)
     :param offset: optional offset for the list of reductions (default is 0)
     :return: List of ReductionResponse objects
     """
@@ -75,5 +84,7 @@ async def get_reductions_for_experiment(
     """
     return [
         ReductionResponse.from_reduction(r)
-        for r in get_reductions_by_experiment_number(experiment_number, limit=limit, offset=offset)
+        for r in get_reductions_by_experiment_number(
+            experiment_number, limit=limit, offset=offset
+        )
     ]

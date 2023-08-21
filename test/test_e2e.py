@@ -248,6 +248,10 @@ def test_get_reductions_for_experiment_number_does_not_exist():
 
 
 def test_get_reductions_for_instrument_reductions_exist():
+    """
+    Test array of reductions returned for given instrument when the instrument and reductions exist
+    :return: None
+    """
     response = client.get("/instrument/test/reductions?limit=3")
     assert response.status_code == 200
     assert response.json() == [

@@ -15,6 +15,11 @@ from ir_api.core.services.reduction import (
 
 @patch("ir_api.core.services.reduction._REDUCTION_REPO")
 def test_get_reductions_by_instrument(mock_repo):
+    """
+    Test that get_reductions by instrument makes correct repo call
+    :param mock_repo: Mocked Repo class
+    :return: None
+    """
     get_reductions_by_instrument("test", limit=5, offset=6)
 
     assert mock_repo.find.call_count == 1
@@ -24,6 +29,11 @@ def test_get_reductions_by_instrument(mock_repo):
 
 @patch("ir_api.core.services.reduction._REDUCTION_REPO")
 def test_get_reduction_by_id_reduction_exists(mock_repo):
+    """
+    Test that correct repo call and return is made
+    :param mock_repo: Mocked Repo
+    :return:
+    """
     expected_reduction = Mock()
     mock_repo.find_one.return_value = expected_reduction
     reduction = get_reduction_by_id(1)
@@ -32,6 +42,11 @@ def test_get_reduction_by_id_reduction_exists(mock_repo):
 
 @patch("ir_api.core.services.reduction._REDUCTION_REPO")
 def test_get_reduction_by_id_not_found_raises(mock_repo):
+    """
+    Test MissingRecordError raised when repo returns None
+    :param mock_repo: Mocked Repo
+    :return: None
+    """
     mock_repo.find_one.return_value = None
     with pytest.raises(MissingRecordError):
         get_reduction_by_id(1)
@@ -39,6 +54,11 @@ def test_get_reduction_by_id_not_found_raises(mock_repo):
 
 @patch("ir_api.core.services.reduction._REDUCTION_REPO")
 def test_get_reductions_by_experiment_number(mock_repo):
+    """
+    Test correct Repo calls are made for by experiment number
+    :param mock_repo: The Mocked Repo
+    :return: None
+    """
     get_reductions_by_experiment_number(123456, limit=6, offset=7)
 
     assert mock_repo.find.call_count == 1

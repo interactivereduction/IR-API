@@ -30,6 +30,10 @@ class PreScriptResponse(BaseModel):
 
 
 class RunResponse(BaseModel):
+    """
+    Run Response object
+    """
+
     filename: str
     experiment_number: int
     title: str
@@ -42,6 +46,11 @@ class RunResponse(BaseModel):
 
     @staticmethod
     def from_run(run: Run) -> RunResponse:
+        """
+        Given a run return a RunResponse object
+        :param run: The run to convert
+        :return: The RunResponse object
+        """
         return RunResponse(
             filename=run.filename,
             experiment_number=run.experiment_number,
@@ -56,6 +65,10 @@ class RunResponse(BaseModel):
 
 
 class ReductionResponse(BaseModel):
+    """
+    ReductionResponse object that does not contain the related runs
+    """
+
     id: int
     reduction_start: Optional[datetime]
     reduction_end: Optional[datetime]
@@ -67,7 +80,14 @@ class ReductionResponse(BaseModel):
 
     @staticmethod
     def from_reduction(reduction: Reduction) -> ReductionResponse:
-        script = ScriptResponse(value=reduction.script.script) if reduction.script else None
+        """
+        Given a reduction return a ReductionResponse
+        :param reduction: The Reduction to convert
+        :return: The ReductionResponse object
+        """
+        script = (
+            ScriptResponse(value=reduction.script.script) if reduction.script else None
+        )
         return ReductionResponse(
             reduction_start=reduction.reduction_start,
             reduction_end=reduction.reduction_end,
@@ -81,11 +101,22 @@ class ReductionResponse(BaseModel):
 
 
 class ReductionWithRunsResponse(ReductionResponse):
+    """
+    ReductionWithRunsResponse is the same as a reduction response, with the runs nested
+    """
+
     runs: List[RunResponse]
 
     @staticmethod
     def from_reduction(reduction: Reduction) -> ReductionWithRunsResponse:
-        script = ScriptResponse(value=reduction.script.script) if reduction.script else None
+        """
+        Given a Reduction, return the ReductionWithRunsReponse
+        :param reduction: The Reduction to convert
+        :return: The ReductionWithRunsResponse Object
+        """
+        script = (
+            ScriptResponse(value=reduction.script.script) if reduction.script else None
+        )
 
         return ReductionWithRunsResponse(
             reduction_start=reduction.reduction_start,
