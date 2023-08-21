@@ -53,7 +53,7 @@ async def get_reductions_for_instrument(instrument: str, limit: int = 0, offset:
     return [ReductionResponse.from_reduction(r) for r in reductions]
 
 
-@ROUTER.get("/reduction/{id}")
+@ROUTER.get("/reduction/{reduction_id}")
 async def get_reduction(reduction_id: int) -> ReductionWithRunsResponse:
     """
     Retrieve a reduction with nested run data, by iD.
