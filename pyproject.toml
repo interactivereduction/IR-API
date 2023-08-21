@@ -3,7 +3,7 @@ name = "ir-api"
 readme = "README.md"
 version = "0.0.1"
 dependencies = [
-    "fastapi[all]==0.100.0",
+    "fastapi[all]==0.101.1",
     "psycopg2==2.9.7",
     "SQLAlchemy==2.0.19",
     "pydantic==2.2.1",
