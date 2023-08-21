@@ -64,7 +64,6 @@ class Script(Base):
     script: Mapped[str] = mapped_column(String())
     sha: Mapped[Optional[str]] = mapped_column(String())
 
-
     def __repr__(self) -> str:
         return f"Script(id={self.id}, sha='{self.sha}', value='{self.script}')"
 
