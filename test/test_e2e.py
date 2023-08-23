@@ -100,6 +100,10 @@ something()
 
 
 def test_get_script_by_sha_no_reduction_id_instrument_exists_hash_exists():
+    """
+    Test script returned by hash untransformed
+    :return: None
+    """
     response = client.get("/instrument/test/script/sha/64c6121")
     assert response.json() == {
         "is_latest": False,
@@ -122,24 +126,40 @@ def test_get_script_by_sha_no_reduction_id_instrument_exists_hash_exists():
 
 
 def test_get_script_by_sha_instrument_doesnt_exist_returns_404():
+    """
+    Test 404 response when instrument doesnt exist
+    :return: None
+    """
     response = client.get("/instrument/foo/script/sha/64c6121")
     assert response.status_code == 404
     assert response.json() == {"message": "Resource not found"}
 
 
 def test_get_script_by_sha_instrument_exists_sha_doesnt_exist_returns_404():
+    """
+    Test 404 when hash does not exist
+    :return: None
+    """
     response = client.get("/instrument/test/script/sha/12345")
     assert response.status_code == 404
     assert response.json() == {"message": "Resource not found"}
 
 
 def test_get_script_by_sha_instrument_and_sha_doesnt_exist_returns_404():
+    """
+    Test 404 when neither hash nor instrument exist
+    :return: None
+    """
     response = client.get("/instrument/foo/script/sha/12345")
     assert response.status_code == 404
     assert response.json() == {"message": "Resource not found"}
 
 
 def test_get_script_by_sha_with_reduction_id():
+    """
+    Test transformed script can be returned from hash when reduction id is provided
+    :return: None
+    """
     response = client.get("/instrument/test/script/sha/64c6121?reduction_id=1")
     assert response.status_code == 200
     response = response.json()
