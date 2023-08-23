@@ -180,5 +180,5 @@ def get_script_by_sha(
             #  script from reduction and has, to prevent retransforming uneccisarily
             _transform_script(instrument, reduction_id, script)
         return script
-    except ConnectionError:
-        raise RuntimeError("Cannot get script from github")
+    except ConnectionError as exc:
+        raise RuntimeError("Cannot get script from github") from exc
