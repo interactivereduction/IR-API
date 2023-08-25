@@ -72,17 +72,30 @@ class ReadOnlyRepo(ABC, Generic[T]):
                 logger.error("Non unique record found for filter: %s", filter_expression)
                 raise NonUniqueRecordError() from exc
 
-    def find(self, filter_expression: Callable[[Type[T]], Union[LambdaElement, ColumnElement["bool"]]]) -> Sequence[T]:
+    def find(
+        self,
+        filter_expression: Callable[[Type[T]], Union[LambdaElement, ColumnElement["bool"]]],
+        limit: int = 0,
+        offset: int = 0,
+    ) -> Sequence[T]:
         """
         Find entities that match a specified filter expression.
 
         :param filter_expression: (Callable[[Type[T]], ColumnElement["bool"]]) The filter expression to be applied.
+        :param limit: (int) The number to limit the sequence by
+        :param offset: (int) The number to offset the results by
         :return: (Sequence[T]) A sequence of found entities.
         """
         logger.info("Finding %s", self._model_type)
         with self._session() as session:
             query = select(self._model_type)
             query = query.filter(filter_expression(self._model_type))
+            if offset:
+                query = query.offset(offset)
+
+            if limit:
+                query = query.limit(limit)
+
             return session.execute(query).scalars().all()
 
 
