@@ -7,8 +7,16 @@ import sys
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from ir_api.core.exceptions import MissingRecordError, MissingScriptError
-from ir_api.exception_handlers import missing_record_handler, missing_script_handler
+from ir_api.core.exceptions import (
+    MissingRecordError,
+    MissingScriptError,
+    UnsafePathError,
+)
+from ir_api.exception_handlers import (
+    missing_record_handler,
+    missing_script_handler,
+    unsafe_path_handler,
+)
 from ir_api.router import ROUTER
 
 stdout_handler = logging.StreamHandler(stream=sys.stdout)
@@ -37,3 +45,4 @@ app.include_router(ROUTER)
 
 app.add_exception_handler(MissingRecordError, missing_record_handler)
 app.add_exception_handler(MissingScriptError, missing_script_handler)
+app.add_exception_handler(UnsafePathError, unsafe_path_handler)
