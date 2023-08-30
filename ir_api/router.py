@@ -6,12 +6,6 @@ from typing import Optional, List
 from fastapi import APIRouter
 from starlette.background import BackgroundTasks
 
-from ir_api.scripts.acquisition import (
-    get_script_for_reduction,
-    write_script_locally,
-    get_script_by_sha,
-)
-
 from ir_api.core.responses import (
     PreScriptResponse,
     ReductionResponse,
@@ -22,7 +16,11 @@ from ir_api.core.services.reduction import (
     get_reduction_by_id,
     get_reductions_by_experiment_number,
 )
-
+from ir_api.scripts.acquisition import (
+    get_script_for_reduction,
+    write_script_locally,
+    get_script_by_sha,
+)
 from ir_api.scripts.pre_script import PreScript
 
 ROUTER = APIRouter()
@@ -38,7 +36,7 @@ async def get_pre_script(
     Script URI - Not intended for calling
     :param instrument: the instrument
     :param background_tasks: handled by fastapi
-    :param run_file: optional query parameter of runfile, used to apply transform
+    :param reduction_id: optional query parameter of runfile, used to apply transform
     :return: ScriptResponse
     """
     script = PreScript(value="")
@@ -95,7 +93,9 @@ async def get_reductions_for_experiment(
 ) -> List[ReductionResponse]:
     """
     Retrieve a list of reductions associated with a specific experiment number.
-    :param experiment_number: the unique experiment number
+    :param experiment_number: the unique experiment number:
+    :param limit: Number of results to limit to
+    :param offset: Number of results to offset by
     :return: List of ReductionResponse objects
     """
     return [
