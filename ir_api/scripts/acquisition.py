@@ -9,6 +9,7 @@ import requests
 
 from ir_api.core.exceptions import MissingRecordError, MissingScriptError
 from ir_api.core.repositories import ReductionRepo
+from ir_api.core.utility import forbid_path_characters
 from ir_api.scripts.pre_script import PreScript
 from ir_api.scripts.transforms.factory import get_transform_for_instrument
 
@@ -103,6 +104,7 @@ def write_script_locally(script: PreScript, instrument: str) -> None:
             fle.writelines(script.original_value)
 
 
+@forbid_path_characters
 def get_by_instrument_name(instrument: str) -> PreScript:
     """
     Get the script object for the given instrument
