@@ -12,7 +12,7 @@ def forbid_path_characters(func: FuncT) -> FuncT:
 
     @functools.wraps(func)
     def wrapper(arg: str) -> Any:
-        if not arg.isalnum():
+        if any(char in arg for char in (".", "/", "\\")):
             raise UnsafePathError(f"Potentially unsafe path was requested: {arg}")
         return func(arg)
 
