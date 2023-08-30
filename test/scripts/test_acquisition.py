@@ -123,9 +123,7 @@ def test__get_script_locally(mock_file):
     result = _get_script_locally(INSTRUMENT)
     assert result.value == "test script content"
     assert result.is_latest is False
-    mock_file.assert_called_once_with(
-        "ir_api/local_scripts/instrument_1.py", "r", encoding="utf-8"
-    )
+    mock_file.assert_called_once_with("ir_api/local_scripts/instrument_1.py", "r", encoding="utf-8")
 
 
 @patch("builtins.open", side_effect=FileNotFoundError)
@@ -148,9 +146,7 @@ def test_write_script_locally(mock_file):
     """
     script = PreScript("test script content", is_latest=True)
     write_script_locally(script, INSTRUMENT)
-    mock_file.assert_called_once_with(
-        "ir_api/local_scripts/instrument_1.py", "w+", encoding="utf-8"
-    )
+    mock_file.assert_called_once_with("ir_api/local_scripts/instrument_1.py", "w+", encoding="utf-8")
     mock_file().writelines.assert_called_once_with("test script content")
 
 
@@ -199,9 +195,7 @@ def test_get_script_for_reduction_no_reduction_id(mock_get_by_name):
 @patch("ir_api.scripts.acquisition.get_transform_for_instrument")
 @patch("ir_api.scripts.acquisition.ReductionRepo")
 @patch("ir_api.scripts.acquisition.get_by_instrument_name")
-def test_get_script_for_reduction_with_valid_reduction_id(
-    mock_get_by_name, mock_repo, mock_get_transform
-):
+def test_get_script_for_reduction_with_valid_reduction_id(mock_get_by_name, mock_repo, mock_get_transform):
     """
     Test transform applied to obtained script when reduction id provided
     :param mock_get_by_name: Mock
@@ -224,9 +218,7 @@ def test_get_script_for_reduction_with_valid_reduction_id(
 
 
 @patch("ir_api.scripts.acquisition.ReductionRepo")
-@patch(
-    "ir_api.scripts.acquisition.get_by_instrument_name", return_value="some instrument"
-)
+@patch("ir_api.scripts.acquisition.get_by_instrument_name", return_value="some instrument")
 def test_get_script_for_reduction_with_invalid_reduction_id(_, mock_repo):
     """
     Test exception raised when reduction id is given but no reduction exists

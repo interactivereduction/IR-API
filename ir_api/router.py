@@ -51,11 +51,8 @@ async def get_pre_script(
         # write the script after to not slow down request
 
 
-
 @ROUTER.get("/instrument/{instrument}/script/sha/{sha}")
-async def get_pre_script_by_sha(
-    instrument: str, sha: str, reduction_id: Optional[int] = None
-) -> PreScriptResponse:
+async def get_pre_script_by_sha(instrument: str, sha: str, reduction_id: Optional[int] = None) -> PreScriptResponse:
     """
 
     :param instrument:
@@ -65,11 +62,9 @@ async def get_pre_script_by_sha(
     """
     return get_script_by_sha(instrument, sha, reduction_id).to_response()
 
- 
+
 @ROUTER.get("/instrument/{instrument}/reductions")
-async def get_reductions_for_instrument(
-    instrument: str, limit: int = 0, offset: int = 0
-) -> List[ReductionResponse]:
+async def get_reductions_for_instrument(instrument: str, limit: int = 0, offset: int = 0) -> List[ReductionResponse]:
     """
     Retrieve a list of reductions for a given instrument.
     :param instrument: the name of the instrument
@@ -105,7 +100,5 @@ async def get_reductions_for_experiment(
     """
     return [
         ReductionResponse.from_reduction(r)
-        for r in get_reductions_by_experiment_number(
-            experiment_number, limit=limit, offset=offset
-        )
+        for r in get_reductions_by_experiment_number(experiment_number, limit=limit, offset=offset)
     ]

@@ -76,14 +76,10 @@ def _get_script_locally(instrument: str) -> PreScript:
     try:
         logger.info("Attempting to get %s script locally...", instrument)
         with open(f"{LOCAL_SCRIPT_DIR}/{instrument}.py", "r", encoding="utf-8") as fle:
-            return PreScript(
-                value="".join(line for line in fle), sha=os.environ.get("sha", None)
-            )
+            return PreScript(value="".join(line for line in fle), sha=os.environ.get("sha", None))
     except FileNotFoundError as exc:
         logger.exception("Could not retrieve %s script locally", instrument)
-        raise MissingScriptError(
-            f"Unable to load any script for instrument: {instrument}"
-        ) from exc
+        raise MissingScriptError(f"Unable to load any script for instrument: {instrument}") from exc
 
 
 def write_script_locally(script: PreScript, instrument: str) -> None:
@@ -95,9 +91,7 @@ def write_script_locally(script: PreScript, instrument: str) -> None:
     """
     if script.original_value == "":
         logger.warning("Unable to acquire any script for instrument %s", instrument)
-        raise RuntimeError(
-            f"Failed to acquire script for instrument {instrument} from remote and locally"
-        )
+        raise RuntimeError(f"Failed to acquire script for instrument {instrument} from remote and locally")
     if script.is_latest:
         logger.info("Updating local %s script", instrument)
         with open(f"{LOCAL_SCRIPT_DIR}/{instrument}.py", "w+", encoding="utf-8") as fle:
@@ -117,9 +111,7 @@ def get_by_instrument_name(instrument: str) -> PreScript:
         return _get_script_locally(instrument)
 
 
-def get_script_for_reduction(
-    instrument: str, reduction_id: Optional[int] = None
-) -> PreScript:
+def get_script_for_reduction(instrument: str, reduction_id: Optional[int] = None) -> PreScript:
     """
     Get the script object for the given instrument, and optional reduction id
     :param instrument: str -  The instrument
@@ -153,9 +145,7 @@ def _transform_script(instrument: str, reduction_id: int, script: PreScript) -> 
     transform.apply(script, reduction)
 
 
-def get_script_by_sha(
-    instrument: str, sha: str, reduction_id: Optional[int] = None
-) -> PreScript:
+def get_script_by_sha(instrument: str, sha: str, reduction_id: Optional[int] = None) -> PreScript:
     """
     Given an instrument and commit sha, return the script for that instrument at that point in history. If a reduction
     id is provided, the transformed version of the script will be returned.
@@ -171,9 +161,7 @@ def get_script_by_sha(
             timeout=30,
         )
         if response.status_code == 404:
-            raise MissingRecordError(
-                f"No script for instrument {instrument} or non existent sha: {sha}"
-            )
+            raise MissingRecordError(f"No script for instrument {instrument} or non existent sha: {sha}")
         if response.status_code != 200:
             raise RuntimeError("Cannot get script from GitHub")
         script = PreScript(value=response.text, sha=sha)
