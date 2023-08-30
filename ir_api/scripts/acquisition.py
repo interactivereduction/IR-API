@@ -167,7 +167,7 @@ def get_script_by_sha(instrument: str, sha: str, reduction_id: Optional[int] = N
         script = PreScript(value=response.text, sha=sha)
         if reduction_id:
             # TODO: When the frontend related PR is merged, add a functicon to the reduction or script service to find
-            #  script from reduction and has, to prevent retransforming uneccisarily
+            #  script from reduction and has, to prevent retransforming unnecessarily
             _transform_script(instrument, reduction_id, script)
         return script
     except ConnectionError as exc:
