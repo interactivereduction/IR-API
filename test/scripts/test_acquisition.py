@@ -6,7 +6,11 @@ from unittest.mock import Mock, patch, mock_open, MagicMock
 
 import pytest
 
-from ir_api.core.exceptions import MissingRecordError, MissingScriptError
+from ir_api.core.exceptions import (
+    MissingRecordError,
+    MissingScriptError,
+    UnsafePathError,
+)
 from ir_api.scripts.acquisition import (
     _get_script_from_remote,
     _get_script_locally,
@@ -268,5 +272,13 @@ def test_get_latest_commit_sha_returns_none_on_exception(mock_get):
     :return: None
     """
     mock_get.side_effect = Exception
-
     assert _get_latest_commit_sha() is None
+
+
+def test_get_by_instrument_path_character_raises_exception():
+    """
+    Test that an exception is raised when a path character is in the instrument name
+    :return: None
+    """
+    with pytest.raises(UnsafePathError):
+        get_by_instrument_name("mari/..")

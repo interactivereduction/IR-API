@@ -16,7 +16,11 @@ from ir_api.core.services.reduction import (
     get_reduction_by_id,
     get_reductions_by_experiment_number,
 )
-from ir_api.scripts.acquisition import get_script_for_reduction, write_script_locally
+from ir_api.scripts.acquisition import (
+    get_script_for_reduction,
+    write_script_locally,
+    get_script_by_sha,
+)
 from ir_api.scripts.pre_script import PreScript
 
 ROUTER = APIRouter()
@@ -32,7 +36,7 @@ async def get_pre_script(
     Script URI - Not intended for calling
     :param instrument: the instrument
     :param background_tasks: handled by fastapi
-    :param run_file: optional query parameter of runfile, used to apply transform
+    :param reduction_id: optional query parameter of runfile, used to apply transform
     :return: ScriptResponse
     """
     script = PreScript(value="")
@@ -45,10 +49,20 @@ async def get_pre_script(
         # write the script after to not slow down request
 
 
+@ROUTER.get("/instrument/{instrument}/script/sha/{sha}")
+async def get_pre_script_by_sha(instrument: str, sha: str, reduction_id: Optional[int] = None) -> PreScriptResponse:
+    """
+
+    :param instrument:
+    :param sha:
+    :param reduction_id:
+    :return:
+    """
+    return get_script_by_sha(instrument, sha, reduction_id).to_response()
+
+
 @ROUTER.get("/instrument/{instrument}/reductions")
-async def get_reductions_for_instrument(
-    instrument: str, limit: int = 0, offset: int = 0
-) -> List[ReductionResponse]:
+async def get_reductions_for_instrument(instrument: str, limit: int = 0, offset: int = 0) -> List[ReductionResponse]:
     """
     Retrieve a list of reductions for a given instrument.
     :param instrument: the name of the instrument
@@ -79,12 +93,12 @@ async def get_reductions_for_experiment(
 ) -> List[ReductionResponse]:
     """
     Retrieve a list of reductions associated with a specific experiment number.
-    :param experiment_number: the unique experiment number
+    :param experiment_number: the unique experiment number:
+    :param limit: Number of results to limit to
+    :param offset: Number of results to offset by
     :return: List of ReductionResponse objects
     """
     return [
         ReductionResponse.from_reduction(r)
-        for r in get_reductions_by_experiment_number(
-            experiment_number, limit=limit, offset=offset
-        )
+        for r in get_reductions_by_experiment_number(experiment_number, limit=limit, offset=offset)
     ]

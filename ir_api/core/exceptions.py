@@ -25,3 +25,9 @@ class MissingScriptError(Exception):
     """
     No script could be found on remote or on github, it is likely the instrument does not exist
     """
+
+
+class UnsafePathError(Exception):
+    """
+    A path was given that is potentially unsafe and could lead to directory traversal
+    """

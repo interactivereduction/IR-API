@@ -9,6 +9,7 @@ import requests
 
 from ir_api.core.exceptions import MissingRecordError, MissingScriptError
 from ir_api.core.repositories import ReductionRepo
+from ir_api.core.utility import forbid_path_characters
 from ir_api.scripts.pre_script import PreScript
 from ir_api.scripts.transforms.factory import get_transform_for_instrument
 
@@ -25,7 +26,8 @@ def _get_latest_commit_sha() -> Optional[str]:
     try:
         logger.info("Getting latest commit sha for autoreduction-script repo")
         response = requests.get(
-            "https://api.github.com/repos/interactivereduction/autoreduction-scripts/commits/HEAD", timeout=30
+            "https://api.github.com/repos/interactivereduction/autoreduction-scripts/commits/HEAD",
+            timeout=30,
         )
 
         return response.json()["sha"] if response.ok else None
@@ -96,6 +98,7 @@ def write_script_locally(script: PreScript, instrument: str) -> None:
             fle.writelines(script.original_value)
 
 
+@forbid_path_characters
 def get_by_instrument_name(instrument: str) -> PreScript:
     """
     Get the script object for the given instrument
@@ -118,14 +121,54 @@ def get_script_for_reduction(instrument: str, reduction_id: Optional[int] = None
     logger.info("Getting script for instrument: %s...", instrument)
     script = get_by_instrument_name(instrument)
     if reduction_id:
-        reduction_repo = ReductionRepo()
-        logger.info("Querying for reduction: %s", reduction_id)
-        reduction = reduction_repo.find_one(lambda r: r.id == reduction_id)
-        if not reduction:
-            logger.info("Reduction not found")
-            raise MissingRecordError(f"No reduction found with id: {reduction_id}")
-        logger.info("Reduction %s found", reduction_id)
-        transform = get_transform_for_instrument(instrument)
-        transform.apply(script, reduction)
+        _transform_script(instrument, reduction_id, script)
 
     return script
+
+
+def _transform_script(instrument: str, reduction_id: int, script: PreScript) -> None:
+    """
+    Given an instrument, reduction id, and script, apply the correct transforms to the script
+    :param instrument: The instrument
+    :param reduction_id: The reduction ID
+    :param script: The Pre script
+    :return: None
+    """
+    reduction_repo = ReductionRepo()
+    logger.info("Querying for reduction: %s", reduction_id)
+    reduction = reduction_repo.find_one(lambda r: r.id == reduction_id)
+    if not reduction:
+        logger.info("Reduction not found")
+        raise MissingRecordError(f"No reduction found with id: {reduction_id}")
+    logger.info("Reduction %s found", reduction_id)
+    transform = get_transform_for_instrument(instrument)
+    transform.apply(script, reduction)
+
+
+def get_script_by_sha(instrument: str, sha: str, reduction_id: Optional[int] = None) -> PreScript:
+    """
+    Given an instrument and commit sha, return the script for that instrument at that point in history. If a reduction
+    id is provided, the transformed version of the script will be returned.
+    :param instrument: The instrument the script is for
+    :param sha: The sha to look for
+    :param reduction_id: Optional reduction id
+    :return: PreScript object
+    """
+    try:
+        response = requests.get(
+            f"https://raw.githubusercontent.com/interactivereduction/autoreduction-scripts/{sha}/"
+            f"{instrument.upper()}/reduce.py",
+            timeout=30,
+        )
+        if response.status_code == 404:
+            raise MissingRecordError(f"No script for instrument {instrument} or non existent sha: {sha}")
+        if response.status_code != 200:
+            raise RuntimeError("Cannot get script from GitHub")
+        script = PreScript(value=response.text, sha=sha)
+        if reduction_id:
+            # TODO: When the frontend related PR is merged, add a function to the reduction or script service to find
+            #  script from reduction and has, to prevent retransforming unnecessarily
+            _transform_script(instrument, reduction_id, script)
+        return script
+    except ConnectionError as exc:
+        raise RuntimeError("Cannot get script from github") from exc
