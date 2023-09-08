@@ -32,7 +32,5 @@ class ToscaTransform(Transform):
 
     @staticmethod
     def _generate_input_runs_line(reduction: Reduction) -> str:
-        run_numbers = [
-            f'"{run_number}"' for run_number in reduction.reduction_inputs["input_runs"]  # type: ignore
-        ]
+        run_numbers = [f'"{run_number}"' for run_number in reduction.reduction_inputs["input_runs"]]  # type: ignore
         return f"input_runs = [{', '.join(run_numbers)}]"
