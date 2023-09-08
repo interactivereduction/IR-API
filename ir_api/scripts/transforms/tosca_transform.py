@@ -22,7 +22,7 @@ class ToscaTransform(Transform):
         lines = script.value.splitlines()
         for index, line in enumerate(lines):
             if line == 'input_runs = ["25240", "25241"]':
-                lines[index] = self._generate_input_runs_line(reduction)  # type: ignore
+                lines[index] = self._generate_input_runs_line(reduction)
                 continue
             if line == 'cycle = "cycle_19_4"':
                 lines[index] = f'cycle = "{reduction.reduction_inputs["cycle_string"]}"'  # type: ignore
@@ -32,5 +32,7 @@ class ToscaTransform(Transform):
 
     @staticmethod
     def _generate_input_runs_line(reduction: Reduction) -> str:
-        run_numbers = [f'"{run_number}"' for run_number in reduction.reduction_inputs["input_runs"]]
+        run_numbers = [
+            f'"{run_number}"' for run_number in reduction.reduction_inputs["input_runs"]  # type: ignore
+        ]
         return f"input_runs = [{', '.join(run_numbers)}]"
