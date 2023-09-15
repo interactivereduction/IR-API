@@ -5,6 +5,7 @@ import logging
 
 from ir_api.scripts.transforms.mari_transforms import MariTransform
 from ir_api.scripts.transforms.test_transforms import TestTransform
+from ir_api.scripts.transforms.tosca_transform import ToscaTransform
 from ir_api.scripts.transforms.transform import Transform, MissingTransformError
 
 logger = logging.getLogger(__name__)
@@ -20,6 +21,8 @@ def get_transform_for_instrument(instrument: str) -> Transform:
     match instrument.lower():
         case "mari":
             return MariTransform()
+        case "tosca":
+            return ToscaTransform()
         case "test":
             return TestTransform()
         case _:
