@@ -6,11 +6,12 @@ and `Instrument` entities.
 import logging
 import os
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar, Type, Optional, Callable, Sequence, Union
+from typing import Generic, TypeVar, Type, Optional, Callable, Sequence, Union, Literal
 
 from sqlalchemy import create_engine, select, LambdaElement, ColumnElement, NullPool
 from sqlalchemy.exc import MultipleResultsFound, NoResultFound
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql.functions import func
 
 from ir_api.core.exceptions import NonUniqueRecordError
 from ir_api.core.model import Script, Reduction, Run, Instrument, Base
@@ -72,24 +73,52 @@ class ReadOnlyRepo(ABC, Generic[T]):
                 logger.error("Non unique record found for filter: %s", filter_expression)
                 raise NonUniqueRecordError() from exc
 
+    def count(
+        self, filter_expression: Optional[Callable[[Type[T]], Union[LambdaElement, ColumnElement["bool"]]]] = None
+    ) -> int:
+        """
+        Count the existing entities, optionally matching a given filter expression
+        :param filter_expression: Optional filter expression
+        :return: The count
+        """
+        logger.info("Counting %s", self._model_type)
+        with self._session() as session:
+            # pylint: disable = not-callable
+            query = select(func.count()).select_from(self._model_type)
+            # pylint: enable = not-callable
+            query = query.filter(filter_expression(self._model_type)) if filter_expression else query
+            result = session.execute(query).scalars().first()
+            return result if result else 0
+
     def find(
         self,
         filter_expression: Callable[[Type[T]], Union[LambdaElement, ColumnElement["bool"]]],
         limit: int = 0,
         offset: int = 0,
+        order_by: Optional[str] = None,
+        order_direction: Literal["asc", "desc"] = "asc",
     ) -> Sequence[T]:
         """
         Find entities that match a specified filter expression.
 
         :param filter_expression: (Callable[[Type[T]], ColumnElement["bool"]]) The filter expression to be applied.
-        :param limit: (int) The number to limit the sequence by
-        :param offset: (int) The number to offset the results by
+        :param limit: (int) The optional number to limit the sequence by
+        :param offset: (int) The optional number to offset the results by
+        :param order_by: (ColumnElement) Optional field to order by
+        :param order_direction: Literal["asc", "desc"] Optional order direction, defaults to ascending
         :return: (Sequence[T]) A sequence of found entities.
         """
         logger.info("Finding %s", self._model_type)
         with self._session() as session:
             query = select(self._model_type)
             query = query.filter(filter_expression(self._model_type))
+            if order_by:
+                column_element = getattr(self._model_type, order_by)
+                query = (
+                    query.order_by(column_element.asc())
+                    if order_direction == "asc"
+                    else query.order_by(column_element.desc())
+                )
             if offset:
                 query = query.offset(offset)
 
