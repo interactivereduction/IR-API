@@ -3,7 +3,6 @@ end-to-end tests
 """
 import random
 import re
-
 # pylint: disable=line-too-long
 from unittest.mock import patch
 
@@ -63,7 +62,7 @@ def setup():
             instrument_ = Instrument()
             instrument_.instrument_name = instrument
             instruments.append(instrument_)
-        for i in range(500):
+        for i in range(5000):
             session.add(faker.insertable_reduction(random.choice(instruments)))
         session.add(TEST_REDUCTION)
         session.commit()
@@ -223,10 +222,10 @@ def test_get_reduction_by_id_reduction_exists():
     Test reduction returned for id that exists
     :return:
     """
-    response = client.get("/reduction/501")
+    response = client.get("/reduction/5001")
     assert response.status_code == 200
     assert response.json() == {
-        "id": 501,
+        "id": 5001,
         "reduction_end": None,
         "reduction_inputs": {
             "ei": "'auto'",
@@ -322,7 +321,7 @@ def test_get_reductions_for_experiment_number():
     assert response.status_code == 200
     assert response.json() == [
         {
-            "id": 501,
+            "id": 5001,
             "reduction_end": None,
             "reduction_inputs": {
                 "ei": "'auto'",
@@ -364,7 +363,7 @@ def test_get_reductions_for_instrument_reductions_exist():
     assert response.status_code == 200
     assert response.json() == [
         {
-            "id": 501,
+            "id": 5001,
             "reduction_end": None,
             "reduction_inputs": {
                 "ei": "'auto'",
@@ -404,7 +403,7 @@ def test_reductions_count():
     """
     response = client.get("/reductions/count")
     assert response.status_code == 200
-    assert response.json()["count"] == 501
+    assert response.json()["count"] == 5001
 
 
 def test_limit_reductions():
