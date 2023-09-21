@@ -1,8 +1,8 @@
 """
 end-to-end tests
 """
+import random
 import re
-
 # pylint: disable=line-too-long
 from unittest.mock import patch
 
@@ -12,6 +12,7 @@ from starlette.testclient import TestClient
 from ir_api.core.model import Instrument, Run, Reduction, ReductionState, Base
 from ir_api.core.repositories import SESSION, ENGINE
 from ir_api.ir_api import app
+from test.utils import IR_FAKER_PROVIDER
 
 client = TestClient(app)
 
@@ -44,6 +45,8 @@ TEST_RUN = Run(
     reductions=[TEST_REDUCTION],
 )
 
+faker = IR_FAKER_PROVIDER
+
 
 @pytest.fixture(scope="module", autouse=True)
 def setup():
@@ -54,6 +57,13 @@ def setup():
     Base.metadata.drop_all(ENGINE)
     Base.metadata.create_all(ENGINE)
     with SESSION() as session:
+        instruments = []
+        for instrument in faker.INSTRUMENTS:
+            instrument_ = Instrument()
+            instrument_.instrument_name = instrument
+            instruments.append(instrument_)
+        for i in range(500):
+            session.add(faker.insertable_reduction(random.choice(instruments)))
         session.add(TEST_REDUCTION)
         session.commit()
         session.refresh(TEST_REDUCTION)
@@ -212,10 +222,10 @@ def test_get_reduction_by_id_reduction_exists():
     Test reduction returned for id that exists
     :return:
     """
-    response = client.get("/reduction/1")
+    response = client.get("/reduction/501")
     assert response.status_code == 200
     assert response.json() == {
-        "id": 1,
+        "id": 501,
         "reduction_end": None,
         "reduction_inputs": {
             "ei": "'auto'",
@@ -311,7 +321,7 @@ def test_get_reductions_for_experiment_number():
     assert response.status_code == 200
     assert response.json() == [
         {
-            "id": 1,
+            "id": 501,
             "reduction_end": None,
             "reduction_inputs": {
                 "ei": "'auto'",
@@ -349,11 +359,11 @@ def test_get_reductions_for_instrument_reductions_exist():
     Test array of reductions returned for given instrument when the instrument and reductions exist
     :return: None
     """
-    response = client.get("/instrument/test/reductions?limit=3")
+    response = client.get("/instrument/test/reductions")
     assert response.status_code == 200
     assert response.json() == [
         {
-            "id": 1,
+            "id": 501,
             "reduction_end": None,
             "reduction_inputs": {
                 "ei": "'auto'",
@@ -381,6 +391,42 @@ def test_reductions_by_instrument_no_reductions():
     Test empty array returned when no reductions for instrument
     :return:
     """
-    response = client.get("/instrument/foo/reductions?limit=3")
+    response = client.get("/instrument/foo/reductions")
     assert response.status_code == 200
     assert response.json() == []
+
+
+def test_reductions_count():
+    """
+    Test count endpoint for all reductions
+    :return:
+    """
+    response = client.get("/reductions/count")
+    assert response.status_code == 200
+    assert response.json()["count"] == 501
+
+
+def test_limit_reductions():
+    """Test reductions can be limited"""
+    response = client.get("/instrument/mari/reductions?limit=4")
+    assert len(response.json()) == 4
+
+
+def test_offset_reductions():
+    """
+    Test results are offset
+    """
+    response_one = client.get("/instrument/mari/reductions")
+    response_two = client.get("/instrument/mari/reductions?offset=10")
+    assert response_one.json()[0] != response_two.json()[0]
+
+
+def test_limit_offset_reductions():
+    """
+    Test offset with limit
+    """
+    response_one = client.get("/instrument/mari/reductions?limit=4")
+    response_two = client.get("/instrument/mari/reductions?limit=4&offset=10")
+
+    assert len(response_two.json()) == 4
+    assert response_one.json() != response_two.json()
