@@ -1,7 +1,7 @@
 """
 Module containing the REST endpoints
 """
-from typing import Optional, List
+from typing import Optional, List, Literal
 
 from fastapi import APIRouter
 from starlette.background import BackgroundTasks
@@ -10,11 +10,14 @@ from ir_api.core.responses import (
     PreScriptResponse,
     ReductionResponse,
     ReductionWithRunsResponse,
+    CountResponse,
 )
 from ir_api.core.services.reduction import (
     get_reductions_by_instrument,
     get_reduction_by_id,
     get_reductions_by_experiment_number,
+    count_reductions,
+    count_reductions_by_instrument,
 )
 from ir_api.scripts.acquisition import (
     get_script_for_reduction,
@@ -62,18 +65,41 @@ async def get_pre_script_by_sha(instrument: str, sha: str, reduction_id: Optiona
 
 
 @ROUTER.get("/instrument/{instrument}/reductions")
-async def get_reductions_for_instrument(instrument: str, limit: int = 0, offset: int = 0) -> List[ReductionResponse]:
+async def get_reductions_for_instrument(
+    instrument: str,
+    limit: int = 0,
+    offset: int = 0,
+    order_by: Literal["reduction_start", "reduction_end", "reduction_state", "id"] = "reduction_start",
+    order_direction: Literal["asc", "desc"] = "desc",
+) -> List[ReductionResponse]:
     """
     Retrieve a list of reductions for a given instrument.
     :param instrument: the name of the instrument
     :param limit: optional limit for the number of reductions returned (default is 0, which can be interpreted as
     no limit)
     :param offset: optional offset for the list of reductions (default is 0)
+    :param order_by: Literal["reduction_start", "reduction_end", "reduction_state", "id"]
+    :param order_direction: Literal["asc", "desc"]
     :return: List of ReductionResponse objects
     """
     instrument = instrument.upper()
-    reductions = get_reductions_by_instrument(instrument, limit=limit, offset=offset)
+    reductions = get_reductions_by_instrument(
+        instrument, limit=limit, offset=offset, order_by=order_by, order_direction=order_direction
+    )
     return [ReductionResponse.from_reduction(r) for r in reductions]
+
+
+@ROUTER.get("/instrument/{instrument}/reductions/count")
+async def count_reductions_for_instrument(
+    instrument: str,
+) -> CountResponse:
+    """
+    Count reductions for a given instrument.
+    :param instrument: the name of the instrument
+    :return: List of ReductionResponse objects
+    """
+    instrument = instrument.upper()
+    return CountResponse(count=count_reductions_by_instrument(instrument))
 
 
 @ROUTER.get("/reduction/{reduction_id}")
@@ -89,16 +115,33 @@ async def get_reduction(reduction_id: int) -> ReductionWithRunsResponse:
 
 @ROUTER.get("/experiment/{experiment_number}/reductions")
 async def get_reductions_for_experiment(
-    experiment_number: int, limit: int = 0, offset: int = 0
+    experiment_number: int,
+    limit: int = 0,
+    offset: int = 0,
+    order_by: Literal["reduction_start", "reduction_end", "reduction_state", "id"] = "reduction_start",
+    order_direction: Literal["desc", "asc"] = "desc",
 ) -> List[ReductionResponse]:
     """
     Retrieve a list of reductions associated with a specific experiment number.
     :param experiment_number: the unique experiment number:
     :param limit: Number of results to limit to
     :param offset: Number of results to offset by
+    :param order_by: Literal["reduction_start", "reduction_end", "reduction_state", "id"]
+    :param order_direction: Literal["asc", "desc"]
     :return: List of ReductionResponse objects
     """
     return [
         ReductionResponse.from_reduction(r)
-        for r in get_reductions_by_experiment_number(experiment_number, limit=limit, offset=offset)
+        for r in get_reductions_by_experiment_number(
+            experiment_number, limit=limit, offset=offset, order_by=order_by, order_direction=order_direction
+        )
     ]
+
+
+@ROUTER.get("/reductions/count")
+async def count_all_reductions() -> CountResponse:
+    """
+    Count all reductions
+    :return: CountResponse containing the count
+    """
+    return CountResponse(count=count_reductions())
