@@ -1,3 +1,6 @@
+"""
+Testing utils
+"""
 import random
 from datetime import datetime, timedelta
 
@@ -12,6 +15,10 @@ faker = Faker()
 
 
 class InteractiveReductionProvider(BaseProvider):
+    """
+    Custom interactive reduction faker provider
+    """
+
     INSTRUMENTS = [
         "ALF",
         "ARGUS",
@@ -52,7 +59,12 @@ class InteractiveReductionProvider(BaseProvider):
         "ZOOM",
     ]
 
-    def start_time(self) -> datetime:
+    @staticmethod
+    def start_time() -> datetime:
+        """
+        Generate a start time
+        :return:
+        """
         return datetime(
             faker.pyint(min_value=2017, max_value=2023),
             faker.pyint(min_value=1, max_value=12),
@@ -63,11 +75,20 @@ class InteractiveReductionProvider(BaseProvider):
         )
 
     def instrument(self) -> Instrument:
+        """
+        Generate a random instrument from the list
+        :return:
+        """
         instrument = Instrument()
         instrument.instrument_name = random.choice(self.INSTRUMENTS)
         return instrument
 
     def run(self, instrument: Instrument) -> Run:
+        """
+        Given an instrument generate a random run model
+        :param instrument: The Instrument
+        :return: random run model
+        """
         run = Run()
         run_start = self.start_time()
         run_end = run_start + timedelta(minutes=faker.pyint(max_value=50))
@@ -92,6 +113,10 @@ class InteractiveReductionProvider(BaseProvider):
         return run
 
     def reduction(self) -> Reduction:
+        """
+        Generate a random Reduction Model
+        :return: The reduction model
+        """
         reduction = Reduction()
         reduction_state = faker.enum(ReductionState)
         if reduction_state != ReductionState.NOT_STARTED:
@@ -106,12 +131,21 @@ class InteractiveReductionProvider(BaseProvider):
         return reduction
 
     def script(self) -> Script:
+        """
+        Generate a random script model
+        :return: The script model
+        """
         script = Script()
         script.sha = faker.unique.sha1()
         script.script = "import os\nprint('foo')\n"
         return script
 
     def insertable_reduction(self, instrument: Instrument) -> Reduction:
+        """
+        Given an instrument model, generate random; reduction, run, and script all related.
+        :param instrument:The instrument
+        :return: The reduction with relations
+        """
         reduction = self.reduction()
         reduction.runs = [self.run(instrument)]
         reduction.script = self.script()

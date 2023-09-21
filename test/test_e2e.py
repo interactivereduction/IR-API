@@ -1,9 +1,9 @@
 """
 end-to-end tests
 """
+# pylint: disable=line-too-long, wrong-import-order
 import random
 import re
-# pylint: disable=line-too-long
 from unittest.mock import patch
 
 import pytest
@@ -62,7 +62,7 @@ def setup():
             instrument_ = Instrument()
             instrument_.instrument_name = instrument
             instruments.append(instrument_)
-        for i in range(5000):
+        for _ in range(5000):
             session.add(faker.insertable_reduction(random.choice(instruments)))
         session.add(TEST_REDUCTION)
         session.commit()
