@@ -289,3 +289,43 @@ def test_reduction_repo_find_with_run(reduction_repo):
     )
     assert len(found_reductions) == 1
     assert TEST_REDUCTION in found_reductions
+
+
+def test_run_repo_order_by_asc(run_repo):
+    """
+    Test ordering on run repo
+    :param run_repo: RunRepo fixture
+    :return: None
+    """
+    runs = run_repo.find(
+        lambda r: r.instrument == TEST_INSTRUMENT_1, order_by="experiment_number", order_direction="asc"
+    )
+    assert runs[0].id == 1
+    assert runs[1].id == 2
+
+
+def test_run_repo_order_by_desc(run_repo):
+    """
+    Test ordering on run repo descending
+    :param run_repo:
+    :return:
+    """
+    runs = run_repo.find(
+        lambda r: r.instrument == TEST_INSTRUMENT_1, order_by="experiment_number", order_direction="desc"
+    )
+    assert runs[0].id == 2
+    assert runs[1].id == 1
+
+
+def test_repo_count_no_filter(run_repo):
+    """
+    Assert count for no filter
+    :param run_repo: repo fixture
+    :return: None
+    """
+    assert run_repo.count() == 3
+
+
+def test_repo_count_with_filter(run_repo):
+    """Assert count for filter"""
+    assert run_repo.count(lambda run: run.instrument == TEST_INSTRUMENT_1) == 2
