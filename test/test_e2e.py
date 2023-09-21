@@ -430,3 +430,11 @@ def test_limit_offset_reductions():
 
     assert len(response_two.json()) == 4
     assert response_one.json() != response_two.json()
+
+
+def test_instrument_reductions_count():
+    """
+    Test instrument reductions count
+    """
+    response = client.get("/instrument/TEST/reductions/count")
+    assert response.json()["count"] == 1
