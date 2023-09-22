@@ -6,7 +6,10 @@ from unittest.mock import patch
 
 from starlette.testclient import TestClient
 
+from ir_api.ir_api import app
+
 client = TestClient(app)
+
 
 def assert_is_commit_sha(string: str) -> None:
     """
