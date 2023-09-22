@@ -7,7 +7,8 @@ from datetime import datetime, timedelta
 from faker import Faker
 from faker.providers import BaseProvider
 
-from ir_api.core.model import Instrument, Run, Reduction, ReductionState, Script
+from ir_api.core.model import Instrument, Run, Reduction, ReductionState, Script, Base
+from ir_api.core.repositories import ENGINE, SESSION
 
 random.seed(1)
 Faker.seed(1)
@@ -154,3 +155,49 @@ class InteractiveReductionProvider(BaseProvider):
 
 
 IR_FAKER_PROVIDER = InteractiveReductionProvider(faker)
+
+TEST_INSTRUMENT = Instrument(instrument_name="TEST")
+TEST_REDUCTION = Reduction(
+    reduction_inputs={
+        "ei": "'auto'",
+        "sam_mass": 0.0,
+        "sam_rmm": 0.0,
+        "monovan": 0,
+        "remove_bkg": True,
+        "sum_runs": False,
+        "runno": 25581,
+        "mask_file_link": "https://raw.githubusercontent.com/pace-neutrons/InstrumentFiles/"
+        "964733aec28b00b13f32fb61afa363a74dd62130/mari/mari_mask2023_1.xml",
+        "wbvan": 12345,
+    },
+    reduction_state=ReductionState.NOT_STARTED,
+)
+TEST_RUN = Run(
+    instrument=TEST_INSTRUMENT,
+    title="Whitebeam - vanadium - detector tests - vacuum bad - HT on not on all LAB",
+    experiment_number=1820497,
+    filename="MAR25581.nxs",
+    run_start="2019-03-22T10:15:44",
+    run_end="2019-03-22T10:18:26",
+    raw_frames=8067,
+    good_frames=6452,
+    users="Wood,Guidi,Benedek,Mansson,Juranyi,Nocerino,Forslund,Matsubara",
+    reductions=[TEST_REDUCTION],
+)
+
+
+def setup_database() -> None:
+    """Setup database for e2e tests"""
+    Base.metadata.drop_all(ENGINE)
+    Base.metadata.create_all(ENGINE)
+    with SESSION() as session:
+        instruments = []
+        for instrument in IR_FAKER_PROVIDER.INSTRUMENTS:
+            instrument_ = Instrument()
+            instrument_.instrument_name = instrument
+            instruments.append(instrument_)
+        for _ in range(5000):
+            session.add(IR_FAKER_PROVIDER.insertable_reduction(random.choice(instruments)))
+        session.add(TEST_REDUCTION)
+        session.commit()
+        session.refresh(TEST_REDUCTION)
