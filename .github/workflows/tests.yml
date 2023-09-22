@@ -119,7 +119,7 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
         run: |
-          pytest test/test_e2e --random-order --random-order-bucket=global --cov --cov-report=xml
+          pytest test/e2e --random-order --random-order-bucket=global --cov --cov-report=xml
 
       - name: Upload coverage
         uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # v3.1.4
