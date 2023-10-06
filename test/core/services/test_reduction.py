@@ -1,6 +1,7 @@
 """
 Tests for reduction service
 """
+from typing import Callable
 from unittest.mock import patch, Mock
 
 import pytest
@@ -10,6 +11,8 @@ from ir_api.core.services.reduction import (
     get_reductions_by_instrument,
     get_reduction_by_id,
     get_reductions_by_experiment_number,
+    count_reductions,
+    count_reductions_by_instrument,
 )
 
 
@@ -64,3 +67,26 @@ def test_get_reductions_by_experiment_number(mock_repo):
     assert mock_repo.find.call_count == 1
     assert mock_repo.find.call_args[1]["limit"] == 6
     assert mock_repo.find.call_args[1]["offset"] == 7
+
+
+@patch("ir_api.core.services.reduction._REDUCTION_REPO")
+def test_count_reductions(mock_repo):
+    """
+    Test count is called
+    :return: None
+    """
+    count_reductions()
+    mock_repo.count.assert_called_once()
+
+
+@patch("ir_api.core.services.reduction._REDUCTION_REPO")
+def test_count_reductions_by_instrument(mock_repo):
+    """
+    Test count by instrument
+    :param mock_repo: mock repo fixture
+    :return: None
+    """
+    count_reductions_by_instrument("TEST")
+    assert mock_repo.count.call_count == 1
+    args, _ = mock_repo.count.call_args
+    assert isinstance(args[0], Callable)

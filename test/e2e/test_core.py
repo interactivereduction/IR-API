@@ -1,200 +1,18 @@
 """
 end-to-end tests
 """
-import re
-
-# pylint: disable=line-too-long
+# pylint: disable=line-too-long, wrong-import-order
 from unittest.mock import patch
 
-import pytest
 from starlette.testclient import TestClient
 
-from ir_api.core.model import Instrument, Run, Reduction, ReductionState, Base
-from ir_api.core.repositories import SESSION, ENGINE
 from ir_api.ir_api import app
+from test.utils import IR_FAKER_PROVIDER
 
 client = TestClient(app)
 
-TEST_INSTRUMENT = Instrument(instrument_name="TEST")
-TEST_REDUCTION = Reduction(
-    reduction_inputs={
-        "ei": "'auto'",
-        "sam_mass": 0.0,
-        "sam_rmm": 0.0,
-        "monovan": 0,
-        "remove_bkg": True,
-        "sum_runs": False,
-        "runno": 25581,
-        "mask_file_link": "https://raw.githubusercontent.com/pace-neutrons/InstrumentFiles/"
-        "964733aec28b00b13f32fb61afa363a74dd62130/mari/mari_mask2023_1.xml",
-        "wbvan": 12345,
-    },
-    reduction_state=ReductionState.NOT_STARTED,
-)
-TEST_RUN = Run(
-    instrument=TEST_INSTRUMENT,
-    title="Whitebeam - vanadium - detector tests - vacuum bad - HT on not on all LAB",
-    experiment_number=1820497,
-    filename="MAR25581.nxs",
-    run_start="2019-03-22T10:15:44",
-    run_end="2019-03-22T10:18:26",
-    raw_frames=8067,
-    good_frames=6452,
-    users="Wood,Guidi,Benedek,Mansson,Juranyi,Nocerino,Forslund,Matsubara",
-    reductions=[TEST_REDUCTION],
-)
 
-
-@pytest.fixture(scope="module", autouse=True)
-def setup():
-    """
-    Setup database pre-testing
-    :return:
-    """
-    Base.metadata.drop_all(ENGINE)
-    Base.metadata.create_all(ENGINE)
-    with SESSION() as session:
-        session.add(TEST_REDUCTION)
-        session.commit()
-        session.refresh(TEST_REDUCTION)
-
-
-def assert_is_commit_sha(string: str) -> None:
-    """
-    assert given string is a commit sha
-    :param string: the string to check
-    :return: None
-    """
-    assert re.match("^[a-f0-9]{7,40}$", string) is not None
-
-
-@patch("ir_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "ir_api/local_scripts")
-def test_get_default_test_prescript():
-    """
-    Test obtaining of untransformed mari pre script
-    :return: None
-    """
-    response = client.get("/instrument/test/script")
-
-    assert response.status_code == 200
-    response_object = response.json()
-    assert response_object["is_latest"]
-    assert (
-        response_object["value"]
-        == """from __future__ import print_function
-
-print("Doing some science")
-
-x = 4
-y = 2
-
-for i in range(20):
-    x *= y
-
-def something() -> None:
-    return
-
-something()
-"""
-    )
-    assert_is_commit_sha(response_object["sha"])
-
-
-def test_get_script_by_sha_no_reduction_id_instrument_exists_hash_exists():
-    """
-    Test script returned by hash untransformed
-    :return: None
-    """
-    response = client.get("/instrument/test/script/sha/64c6121")
-    assert response.json() == {
-        "is_latest": False,
-        "sha": "64c6121",
-        "value": "from __future__ import print_function\n"
-        "\n"
-        'print("Doing some science")\n'
-        "\n"
-        "x = 4\n"
-        "y = 2\n"
-        "\n"
-        "for i in range(20):\n"
-        "    x *= y\n"
-        "\n"
-        "def something() -> None:\n"
-        "    return\n"
-        "\n"
-        "something()\n",
-    }
-
-
-def test_get_script_by_sha_instrument_doesnt_exist_returns_404():
-    """
-    Test 404 response when instrument doesnt exist
-    :return: None
-    """
-    response = client.get("/instrument/foo/script/sha/64c6121")
-    assert response.status_code == 404
-    assert response.json() == {"message": "Resource not found"}
-
-
-def test_get_script_by_sha_instrument_exists_sha_doesnt_exist_returns_404():
-    """
-    Test 404 when hash does not exist
-    :return: None
-    """
-    response = client.get("/instrument/test/script/sha/12345")
-    assert response.status_code == 404
-    assert response.json() == {"message": "Resource not found"}
-
-
-def test_get_script_by_sha_instrument_and_sha_doesnt_exist_returns_404():
-    """
-    Test 404 when neither hash nor instrument exist
-    :return: None
-    """
-    response = client.get("/instrument/foo/script/sha/12345")
-    assert response.status_code == 404
-    assert response.json() == {"message": "Resource not found"}
-
-
-def test_get_script_by_sha_with_reduction_id():
-    """
-    Test transformed script can be returned from hash when reduction id is provided
-    :return: None
-    """
-    response = client.get("/instrument/test/script/sha/64c6121?reduction_id=1")
-    assert response.status_code == 200
-    response = response.json()
-    assert response["is_latest"] is False
-    assert response["sha"] == "64c6121"
-    assert (
-        response["value"]
-        == """# This line is inserted via test
-from __future__ import print_function
-
-
-x = 22
-y = 2
-
-for i in range(20):
-    x *= y
-
-def something() -> None:
-    return
-
-something()"""
-    )
-
-
-def test_get_default_prescript_instrument_does_not_exist():
-    """
-    Test 404 for requesting script from unknown instrument
-    :return:
-    """
-    response = client.get("/instrument/foo/script")
-    assert response.status_code == 404
-    assert response.json() == {
-        "message": "The script could not be found locally or on remote, it is likely the script does not exist"
-    }
+faker = IR_FAKER_PROVIDER
 
 
 def test_get_reduction_by_id_reduction_doesnt_exist():
@@ -212,10 +30,10 @@ def test_get_reduction_by_id_reduction_exists():
     Test reduction returned for id that exists
     :return:
     """
-    response = client.get("/reduction/1")
+    response = client.get("/reduction/5001")
     assert response.status_code == 200
     assert response.json() == {
-        "id": 1,
+        "id": 5001,
         "reduction_end": None,
         "reduction_inputs": {
             "ei": "'auto'",
@@ -311,7 +129,7 @@ def test_get_reductions_for_experiment_number():
     assert response.status_code == 200
     assert response.json() == [
         {
-            "id": 1,
+            "id": 5001,
             "reduction_end": None,
             "reduction_inputs": {
                 "ei": "'auto'",
@@ -349,11 +167,11 @@ def test_get_reductions_for_instrument_reductions_exist():
     Test array of reductions returned for given instrument when the instrument and reductions exist
     :return: None
     """
-    response = client.get("/instrument/test/reductions?limit=3")
+    response = client.get("/instrument/test/reductions")
     assert response.status_code == 200
     assert response.json() == [
         {
-            "id": 1,
+            "id": 5001,
             "reduction_end": None,
             "reduction_inputs": {
                 "ei": "'auto'",
@@ -381,6 +199,50 @@ def test_reductions_by_instrument_no_reductions():
     Test empty array returned when no reductions for instrument
     :return:
     """
-    response = client.get("/instrument/foo/reductions?limit=3")
+    response = client.get("/instrument/foo/reductions")
     assert response.status_code == 200
     assert response.json() == []
+
+
+def test_reductions_count():
+    """
+    Test count endpoint for all reductions
+    :return:
+    """
+    response = client.get("/reductions/count")
+    assert response.status_code == 200
+    assert response.json()["count"] == 5001
+
+
+def test_limit_reductions():
+    """Test reductions can be limited"""
+    response = client.get("/instrument/mari/reductions?limit=4")
+    assert len(response.json()) == 4
+
+
+def test_offset_reductions():
+    """
+    Test results are offset
+    """
+    response_one = client.get("/instrument/mari/reductions")
+    response_two = client.get("/instrument/mari/reductions?offset=10")
+    assert response_one.json()[0] != response_two.json()[0]
+
+
+def test_limit_offset_reductions():
+    """
+    Test offset with limit
+    """
+    response_one = client.get("/instrument/mari/reductions?limit=4")
+    response_two = client.get("/instrument/mari/reductions?limit=4&offset=10")
+
+    assert len(response_two.json()) == 4
+    assert response_one.json() != response_two.json()
+
+
+def test_instrument_reductions_count():
+    """
+    Test instrument reductions count
+    """
+    response = client.get("/instrument/TEST/reductions/count")
+    assert response.json()["count"] == 1

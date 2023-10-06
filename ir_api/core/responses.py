@@ -11,6 +11,12 @@ from pydantic import BaseModel
 from ir_api.core.model import ReductionState, Reduction, Run
 
 
+class CountResponse(BaseModel):
+    """Count response shows the count of a model"""
+
+    count: int
+
+
 class ScriptResponse(BaseModel):
     """
     ScriptResponse returns from the API a script value
