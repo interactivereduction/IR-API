@@ -329,3 +329,9 @@ def test_repo_count_no_filter(run_repo):
 def test_repo_count_with_filter(run_repo):
     """Assert count for filter"""
     assert run_repo.count(lambda run: run.instrument == TEST_INSTRUMENT_1) == 2
+
+
+def test_repo_limit_no_filter(run_repo):
+    """Test limit"""
+    assert len(run_repo.find(lambda run: True)) == 3
+    assert len(run_repo.find(lambda run: True, limit=1)) == 1
