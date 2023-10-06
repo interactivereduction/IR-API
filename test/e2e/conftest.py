@@ -1,3 +1,6 @@
+"""
+Global fixture for e2e tests
+"""
 import pytest
 
 from test.utils import setup_database
