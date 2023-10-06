@@ -5,22 +5,11 @@ end 2 end test cases for script acquisition
 import re
 from unittest.mock import patch
 
-import pytest
 from starlette.testclient import TestClient
 
 from ir_api.ir_api import app
-from test.utils import setup_database
 
 client = TestClient(app)
-
-
-@pytest.fixture(scope="session", autouse=True)
-def setup():
-    """
-    Setup database pre-testing
-    :return:
-    """
-    setup_database()
 
 
 def assert_is_commit_sha(string: str) -> None:
