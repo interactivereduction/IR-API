@@ -5,7 +5,7 @@ version = "0.0.1"
 dependencies = [
     "fastapi[all]==0.103.1",
     "psycopg2==2.9.8",
-    "SQLAlchemy==2.0.20",
+    "SQLAlchemy==2.0.21",
     "pydantic==2.4.2",
     "uvicorn==0.23.2",
     "requests==2.31.0"
