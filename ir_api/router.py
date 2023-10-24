@@ -31,6 +31,7 @@ ROUTER = APIRouter()
 
 @ROUTER.get("/healthz")
 async def get() -> Literal["ok"]:
+    """Health Check endpoint."""
     return "ok"
 
 
