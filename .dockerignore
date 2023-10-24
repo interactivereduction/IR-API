@@ -1,0 +1,9 @@
+
+venv/
+build/
+test/
+.*/
+*.md
+.*
+*.egg-info
+*.ini
