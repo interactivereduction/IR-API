@@ -246,3 +246,13 @@ def test_instrument_reductions_count():
     """
     response = client.get("/instrument/TEST/reductions/count")
     assert response.json()["count"] == 1
+
+
+def test_readiness_and_liveness_probes():
+    """
+    Test endpoint for probes
+    :return: None
+    """
+    response = client.get("/healthz")
+    assert response.status_code == 200
+    assert response.text == '"ok"'
