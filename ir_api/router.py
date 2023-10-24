@@ -29,6 +29,11 @@ from ir_api.scripts.pre_script import PreScript
 ROUTER = APIRouter()
 
 
+@ROUTER.get("/healthz")
+async def get() -> Literal["ok"]:
+    return "ok"
+
+
 @ROUTER.get("/instrument/{instrument}/script")
 async def get_pre_script(
     instrument: str,
