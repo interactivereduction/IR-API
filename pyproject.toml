@@ -3,7 +3,7 @@ name = "ir-api"
 readme = "README.md"
 version = "0.0.1"
 dependencies = [
-    "fastapi[all]==0.103.2",
+    "fastapi[all]==0.104.0",
     "psycopg2==2.9.9",
     "SQLAlchemy==2.0.22",
     "pydantic==2.4.2",
@@ -25,15 +25,15 @@ test = [
     "httpx==0.25.0",
     "pytest-cov==4.1.0",
     "pytest-random-order==1.1.0",
-    "Faker==19.10.0"
+    "Faker==19.12.0"
 
 ]
 
 code-inspection = [
-    "pylint==3.0.1",
-    "mypy==1.5.1",
+    "pylint==3.0.2",
+    "mypy==1.6.1",
     "ir-api[test]",
-    "types-requests==2.31.0.8",
+    "types-requests==2.31.0.10",
     "types-urllib3==1.26.25.14"
 ]
 
