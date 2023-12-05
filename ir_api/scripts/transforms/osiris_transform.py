@@ -3,6 +3,7 @@ Module provides the OSIRISTransform class, an implementation of the Transform ab
 scripts.
 """
 import logging
+from collections.abc import Iterable
 from typing import List
 
 from sqlalchemy import ColumnElement
@@ -29,7 +30,15 @@ class OsirisTransform(Transform):
         # If you get here in the future, try removing the type ignore and see if it passes with newer mypy
         reduction_mode = reduction.reduction_inputs["mode"]
         for index, line in enumerate(lines):
-            if self._replace_input(line, lines, index, "input_runs", reduction.reduction_inputs["runno"]):  # type: ignore
+            if self._replace_input(
+                line,
+                lines,
+                index,
+                "input_runs",
+                reduction.reduction_inputs["runno"]
+                if isinstance(reduction.reduction_inputs["runno"], Iterable)
+                else f"[{reduction.reduction_inputs['runno']}]",
+            ):  # type: ignore
                 continue
             if self._replace_input(line, lines, index, "cycle", reduction.reduction_inputs["cycle_string"]):
                 continue
@@ -40,7 +49,7 @@ class OsirisTransform(Transform):
                 lines,
                 index,
                 "spectroscopy_reduction",
-                str(reduction_mode == "both" or reduction_mode == "spectroscopy"),
+                str(reduction_mode in ("both", "spectroscopy")),
             ):
                 continue
             if self._replace_input(
@@ -48,7 +57,7 @@ class OsirisTransform(Transform):
                 lines,
                 index,
                 "diffraction_reduction",
-                str(reduction_mode == "both" or reduction_mode == "diffraction"),
+                str(reduction_mode in ("both", "diffraction")),
             ):
                 continue
         script.value = "\n".join(lines)

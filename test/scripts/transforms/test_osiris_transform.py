@@ -136,3 +136,29 @@ def test_osiris_transform_spectroscopy():
     OsirisTransform().apply(script, reduction)
 
     assert script.value == create_expected_script("cycle_20_1", "[123, 124]", "004", "False", "True")
+
+
+def test_osiris_transform_diffraction_cycle():
+    reduction = Mock()
+    reduction.reduction_inputs = {
+        "mode": "diffraction",
+        "cycle_string": "cycle_20_1",
+        "runno": [123],
+        "analyser": "002",
+    }
+    script = PreScript(value=SCRIPT)
+    OsirisTransform().apply(script, reduction)
+    assert script.value == create_expected_script("cycle_20_1", "[123]", "002", "True", "False")
+
+
+def test_osiris_transform_both_cycle():
+    reduction = Mock()
+    reduction.reduction_inputs = {
+        "mode": "both",
+        "cycle_string": "cycle_20_1",
+        "runno": 123,
+        "analyser": "002",
+    }
+    script = PreScript(value=SCRIPT)
+    OsirisTransform().apply(script, reduction)
+    assert script.value == create_expected_script("cycle_20_1", "[123]", "002", "True", "True")
