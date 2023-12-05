@@ -4,10 +4,6 @@ scripts.
 """
 import logging
 from collections.abc import Iterable
-from typing import List, Union
-
-from sqlalchemy import ColumnElement
-from sqlalchemy.dialects.postgresql import JSONB
 
 from ir_api.core.model import Reduction
 from ir_api.scripts.pre_script import PreScript
@@ -64,11 +60,3 @@ class OsirisTransform(Transform):
         logger.info("Transform complete for reduction %s", reduction.id)
 
     # pylint: enable = line-too-long
-    @staticmethod
-    def _replace_input(
-        line: str, lines: List[str], index: int, line_start: str, replacement: Union[ColumnElement["JSONB"], str]
-    ) -> bool:
-        if line.startswith(line_start):
-            lines[index] = f"{line_start} = {replacement}"
-            return True
-        return False

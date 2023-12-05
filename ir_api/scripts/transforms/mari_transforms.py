@@ -3,10 +3,6 @@ Module provides the MariTransform class, an implementation of the Transform abst
 scripts.
 """
 import logging
-from typing import List
-
-from sqlalchemy import ColumnElement
-from sqlalchemy.dialects.postgresql import JSONB
 
 from ir_api.core.model import Reduction
 from ir_api.scripts.pre_script import PreScript
@@ -51,11 +47,3 @@ class MariTransform(Transform):
         logger.info("Transform complete for reduction %s", reduction.id)
 
     # pylint: enable = line-too-long
-    @staticmethod
-    def _replace_input(
-        line: str, lines: List[str], index: int, line_start: str, replacement: ColumnElement["JSONB"]
-    ) -> bool:
-        if line.startswith(line_start):
-            lines[index] = f"{line_start} = {replacement}"
-            return True
-        return False
