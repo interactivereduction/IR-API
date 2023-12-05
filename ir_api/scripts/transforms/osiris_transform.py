@@ -4,7 +4,7 @@ scripts.
 """
 import logging
 from collections.abc import Iterable
-from typing import List
+from typing import List, Union
 
 from sqlalchemy import ColumnElement
 from sqlalchemy.dialects.postgresql import JSONB
@@ -28,21 +28,21 @@ class OsirisTransform(Transform):
         lines = script.value.splitlines()
         # MyPY does not believe ColumnElement[JSONB] is indexable, despite JSONB implementing the Indexable mixin
         # If you get here in the future, try removing the type ignore and see if it passes with newer mypy
-        reduction_mode = reduction.reduction_inputs["mode"]
+        reduction_mode = reduction.reduction_inputs["mode"]  # type: ignore
         for index, line in enumerate(lines):
             if self._replace_input(
                 line,
                 lines,
                 index,
                 "input_runs",
-                reduction.reduction_inputs["runno"]
-                if isinstance(reduction.reduction_inputs["runno"], Iterable)
-                else f"[{reduction.reduction_inputs['runno']}]",
-            ):  # type: ignore
+                reduction.reduction_inputs["runno"]  # type: ignore
+                if isinstance(reduction.reduction_inputs["runno"], Iterable)  # type: ignore
+                else f"[{reduction.reduction_inputs['runno']}]",  # type: ignore
+            ):
                 continue
-            if self._replace_input(line, lines, index, "cycle", reduction.reduction_inputs["cycle_string"]):
+            if self._replace_input(line, lines, index, "cycle", reduction.reduction_inputs["cycle_string"]):  # type: ignore
                 continue
-            if self._replace_input(line, lines, index, "reflection", reduction.reduction_inputs["analyser"]):
+            if self._replace_input(line, lines, index, "reflection", reduction.reduction_inputs["analyser"]):  # type: ignore
                 continue
             if self._replace_input(
                 line,
@@ -66,7 +66,7 @@ class OsirisTransform(Transform):
     # pylint: enable = line-too-long
     @staticmethod
     def _replace_input(
-        line: str, lines: List[str], index: int, line_start: str, replacement: ColumnElement["JSONB"] | str
+        line: str, lines: List[str], index: int, line_start: str, replacement: Union[ColumnElement["JSONB"], str]
     ) -> bool:
         if line.startswith(line_start):
             lines[index] = f"{line_start} = {replacement}"

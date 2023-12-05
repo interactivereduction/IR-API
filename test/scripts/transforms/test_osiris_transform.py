@@ -66,6 +66,7 @@ if diffratcion_reduction:
 def create_expected_script(
     cycle_string: str, input_runs: str, reflection: str, diffraction: str, spectroscopy: str
 ) -> str:
+    """Create expected output script string based on given inputs"""
     return f"""from mantid.simpleapi import *
 import matplotlib.pyplot as plt
 import numpy as np
@@ -139,6 +140,7 @@ def test_osiris_transform_spectroscopy():
 
 
 def test_osiris_transform_diffraction_cycle():
+    """Test for diffraction mode"""
     reduction = Mock()
     reduction.reduction_inputs = {
         "mode": "diffraction",
@@ -152,6 +154,7 @@ def test_osiris_transform_diffraction_cycle():
 
 
 def test_osiris_transform_both_cycle():
+    """Test for both mode"""
     reduction = Mock()
     reduction.reduction_inputs = {
         "mode": "both",
