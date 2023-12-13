@@ -12,6 +12,7 @@ from ir_api.core.repositories import ReductionRepo
 from ir_api.core.utility import forbid_path_characters
 from ir_api.scripts.pre_script import PreScript
 from ir_api.scripts.transforms.factory import get_transform_for_instrument
+from ir_api.scripts.transforms.mantid_transform import MantidTransform
 
 logger = logging.getLogger(__name__)
 
@@ -143,6 +144,8 @@ def _transform_script(instrument: str, reduction_id: int, script: PreScript) -> 
     logger.info("Reduction %s found", reduction_id)
     transform = get_transform_for_instrument(instrument)
     transform.apply(script, reduction)
+    mantid_transform = MantidTransform()
+    mantid_transform.apply(script, reduction)
 
 
 def get_script_by_sha(instrument: str, sha: str, reduction_id: Optional[int] = None) -> PreScript:
