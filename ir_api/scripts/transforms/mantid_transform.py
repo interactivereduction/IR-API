@@ -16,6 +16,7 @@ class MantidTransform(Transform):
         logger.info("Applying mantid transform for reduction %s", reduction.id)
         lines = script.value.splitlines()
         new_lines = [
+            "from __future__ import print_function"
             "from mantid.kernel import ConfigService",
             f"ConfigService.Instance()[\"network.github.api_token\"] = \"{os.getenv('GITHUB_API_TOKEN', '')}\"",
         ]
