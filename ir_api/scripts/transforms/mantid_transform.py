@@ -14,12 +14,14 @@ class MantidTransform(Transform):
 
     def apply(self, script: PreScript, reduction: Reduction) -> None:
         logger.info("Applying mantid transform for reduction %s", reduction.id)
-        lines = script.value.splitlines()
+        lines = [line for line in script.value.splitlines() if not line.startswith("from __future")]
+        future_import_lines = [line for line in script.value.splitlines() if line.startswith("from __future")]
+
         new_lines = [
-            "from __future__ import print_function",
             "from mantid.kernel import ConfigService",
             f"ConfigService.Instance()[\"network.github.api_token\"] = \"{os.getenv('GITHUB_API_TOKEN', '')}\"",
         ]
         new_lines.extend(lines)
-        script.value = "\n".join(new_lines)
+        future_import_lines.extend(new_lines)
+        script.value = "\n".join(future_import_lines)
         logger.info("Transform complete for %s", reduction.id)
