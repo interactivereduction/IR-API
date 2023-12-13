@@ -17,7 +17,7 @@ class MantidTransform(Transform):
         lines = script.value.splitlines()
         new_lines = [
             "from mantid.kernel import ConfigService",
-            f"ConfigService.Instance()[\"network.github.api_token\"] = \"{os.getenv('GITHUB_API_TOKEN')}\"",
+            f"ConfigService.Instance()[\"network.github.api_token\"] = \"{os.getenv('GITHUB_API_TOKEN', '')}\"",
         ]
         new_lines.extend(lines)
         script.value = "\n".join(new_lines)
