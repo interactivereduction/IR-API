@@ -18,6 +18,7 @@ print(1 + 2)
 
 
 def test_mantid_transform():
+    """Test the mantid transform"""
     reduction = Mock()
     reduction.id = 1
     os.environ["GITHUB_API_TOKEN"] = "special token"
