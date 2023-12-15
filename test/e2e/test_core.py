@@ -91,7 +91,7 @@ def test_unsafe_path_request_returns_400_status(_):
 
 
 @patch("ir_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "ir_api/local_scripts")
-def test_get_mari_prescript_for_reduction():
+def test_get_test_prescript_for_reduction():
     """
     Test the return of transformed test script
     :return: None
@@ -103,8 +103,8 @@ def test_get_mari_prescript_for_reduction():
     assert response_object["is_latest"]
     assert (
         response_object["value"]
-        == """# This line is inserted via test
-from __future__ import print_function
+        == """from __future__ import print_function
+# This line is inserted via test
 
 
 x = 22
