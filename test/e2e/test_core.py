@@ -104,6 +104,8 @@ def test_get_test_prescript_for_reduction():
     assert (
         response_object["value"]
         == """from __future__ import print_function
+from mantid.kernel import ConfigService
+ConfigService.Instance()[\"network.github.api_token\"] = \"\"
 # This line is inserted via test
 
 
