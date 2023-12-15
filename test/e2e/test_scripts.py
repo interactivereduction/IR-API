@@ -121,8 +121,10 @@ def test_get_script_by_sha_with_reduction_id():
     assert response["sha"] == "64c6121"
     assert (
         response["value"]
-        == """# This line is inserted via test
-from __future__ import print_function
+        == """from __future__ import print_function
+from mantid.kernel import ConfigService
+ConfigService.Instance()[\"network.github.api_token\"] = \"\"
+# This line is inserted via test
 
 
 x = 22
