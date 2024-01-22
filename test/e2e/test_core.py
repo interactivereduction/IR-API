@@ -250,6 +250,23 @@ def test_instrument_reductions_count():
     assert response.json()["count"] == 1
 
 
+def test_instrument_runs_count():
+    """
+    Test instrument runs count
+    :return:
+    """
+    response = client.get("/instrument/TEST/runs/count")
+    assert response.json()["count"] == 1
+
+
+def test_total_runs_count():
+    """
+    Test total runs count
+    """
+    response = client.get("/runs/count")
+    assert response.json()["count"] == 5001
+
+
 def test_readiness_and_liveness_probes():
     """
     Test endpoint for probes
