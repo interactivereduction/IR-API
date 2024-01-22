@@ -183,6 +183,15 @@ async def get_runs_for_instrument(
     order_by: Literal["experiment_number", "run_end", "run_start", "good_frames", "raw_frames", "id"] = "run_start",
     order_direction: Literal["asc", "desc"] = "desc",
 ) -> List[RunResponse]:
+    """
+    Get all runs for the given instrument
+    :param instrument: The instrument
+    :param limit: Optional limit to apply
+    :param offset: Optional offset to apply
+    :param order_by: Optional field to order by
+    :param order_direction: Optional direction to order by
+    :return: List of RunResponses
+    """
     return [
         RunResponse.from_run(run)
         for run in get_runs_by_instrument(
