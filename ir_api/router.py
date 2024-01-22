@@ -45,6 +45,7 @@ async def get_pre_script(
 ) -> PreScriptResponse:
     """
     Script URI - Not intended for calling
+    \f
     :param instrument: the instrument
     :param background_tasks: handled by fastapi
     :param reduction_id: optional query parameter of runfile, used to apply transform
@@ -63,10 +64,12 @@ async def get_pre_script(
 @ROUTER.get("/instrument/{instrument}/script/sha/{sha}")
 async def get_pre_script_by_sha(instrument: str, sha: str, reduction_id: Optional[int] = None) -> PreScriptResponse:
     """
-
-    :param instrument:
-    :param sha:
-    :param reduction_id:
+    Given an instrument and the commit sha of a script, obtain the pre script. Optionally providing a reduction id to
+    transform the script
+    \f
+    :param instrument: The instrument
+    :param sha: The commit sha of the script
+    :param reduction_id: The reduction id to apply transforms
     :return:
     """
     return get_script_by_sha(instrument, sha, reduction_id).to_response()
@@ -82,6 +85,7 @@ async def get_reductions_for_instrument(
 ) -> List[ReductionResponse]:
     """
     Retrieve a list of reductions for a given instrument.
+    \f
     :param instrument: the name of the instrument
     :param limit: optional limit for the number of reductions returned (default is 0, which can be interpreted as
     no limit)
@@ -103,6 +107,7 @@ async def count_reductions_for_instrument(
 ) -> CountResponse:
     """
     Count reductions for a given instrument.
+    \f
     :param instrument: the name of the instrument
     :return: List of ReductionResponse objects
     """
@@ -114,6 +119,7 @@ async def count_reductions_for_instrument(
 async def get_reduction(reduction_id: int) -> ReductionWithRunsResponse:
     """
     Retrieve a reduction with nested run data, by iD.
+    \f
     :param reduction_id: the unique identifier of the reduction
     :return: ReductionWithRunsResponse object
     """
@@ -131,6 +137,7 @@ async def get_reductions_for_experiment(
 ) -> List[ReductionResponse]:
     """
     Retrieve a list of reductions associated with a specific experiment number.
+    \f
     :param experiment_number: the unique experiment number:
     :param limit: Number of results to limit to
     :param offset: Number of results to offset by
@@ -150,6 +157,7 @@ async def get_reductions_for_experiment(
 async def count_all_reductions() -> CountResponse:
     """
     Count all reductions
+    \f
     :return: CountResponse containing the count
     """
     return CountResponse(count=count_reductions())
@@ -159,6 +167,7 @@ async def count_all_reductions() -> CountResponse:
 async def count_all_runs() -> CountResponse:
     """
     Count all runs
+    \f
     :return: Count response containing the count
     """
     return CountResponse(count=get_total_run_count())
@@ -168,6 +177,7 @@ async def count_all_runs() -> CountResponse:
 async def count_runs_for_instrument(instrument: str) -> CountResponse:
     """
     Count the total runs for the given instrument
+    \f
     :param instrument: The instrument
     :return: The count response
     """
@@ -185,6 +195,7 @@ async def get_runs_for_instrument(
 ) -> List[RunResponse]:
     """
     Get all runs for the given instrument
+    \f
     :param instrument: The instrument
     :param limit: Optional limit to apply
     :param offset: Optional offset to apply
