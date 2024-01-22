@@ -30,7 +30,7 @@ test = [
 ]
 
 code-inspection = [
-    "pylint==3.0.2",
+    "pylint==3.0.3",
     "mypy==1.7.1",
     "ir-api[test]",
     "types-requests==2.31.0.10",
