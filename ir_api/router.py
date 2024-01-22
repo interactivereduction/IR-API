@@ -11,6 +11,7 @@ from ir_api.core.responses import (
     ReductionResponse,
     ReductionWithRunsResponse,
     CountResponse,
+    RunResponse,
 )
 from ir_api.core.services.reduction import (
     get_reductions_by_instrument,
@@ -19,6 +20,7 @@ from ir_api.core.services.reduction import (
     count_reductions,
     count_reductions_by_instrument,
 )
+from ir_api.core.services.run import get_total_run_count, get_run_count_by_instrument, get_runs_by_instrument
 from ir_api.scripts.acquisition import (
     get_script_for_reduction,
     write_script_locally,
@@ -151,3 +153,39 @@ async def count_all_reductions() -> CountResponse:
     :return: CountResponse containing the count
     """
     return CountResponse(count=count_reductions())
+
+
+@ROUTER.get("/runs/count")
+async def count_all_runs() -> CountResponse:
+    """
+    Count all runs
+    :return: Count response containing the count
+    """
+    return CountResponse(count=get_total_run_count())
+
+
+@ROUTER.get("/instrument/{instrument}/runs/count")
+async def count_runs_for_instrument(instrument: str) -> CountResponse:
+    """
+    Count the total runs for the given instrument
+    :param instrument: The instrument
+    :return: The count response
+    """
+    instrument = instrument.upper()
+    return CountResponse(count=get_run_count_by_instrument(instrument))
+
+
+@ROUTER.get("/instrument/{instrument}/runs")
+async def get_runs_for_instrument(
+    instrument: str,
+    limit: int = 0,
+    offset: int = 0,
+    order_by: Literal["experiment_number", "run_end", "run_start", "good_frames", "raw_frames", "id"] = "run_start",
+    order_direction: Literal["asc", "desc"] = "desc",
+) -> List[RunResponse]:
+    return [
+        RunResponse.from_run(run)
+        for run in get_runs_by_instrument(
+            instrument.upper(), limit=limit, offset=offset, order_by=order_by, order_direction=order_direction
+        )
+    ]
