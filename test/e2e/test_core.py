@@ -267,6 +267,27 @@ def test_total_runs_count():
     assert response.json()["count"] == 5001
 
 
+def test_get_runs_by_instrument():
+    """
+    Test getting runs by instrument
+    :return:
+    """
+    response = client.get("/instrument/TEST/runs")
+    assert len(response.json()) == 1
+    assert response.json()[0] == {
+        "experiment_number": 1820497,
+        "filename": "MAR25581.nxs",
+        "good_frames": 6452,
+        "instrument_name": "TEST",
+        "raw_frames": 8067,
+        "run_end": "2019-03-22T10:18:26",
+        "run_start": "2019-03-22T10:15:44",
+        "title": "Whitebeam - vanadium - detector tests - vacuum bad - HT on not on all LAB",
+        "users": "Wood,Guidi,Benedek,Mansson,Juranyi,Nocerino,Forslund,Matsubara",
+    }
+    assert response.status_code == 200
+
+
 def test_readiness_and_liveness_probes():
     """
     Test endpoint for probes
