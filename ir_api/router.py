@@ -83,7 +83,7 @@ async def get_reductions_for_instrument(
     order_by: Literal["reduction_start", "reduction_end", "reduction_state", "id"] = "reduction_start",
     order_direction: Literal["asc", "desc"] = "desc",
     include_runs: bool = False,
-) -> List[ReductionResponse]:
+) -> List[ReductionResponse] | List[ReductionWithRunsResponse]:
     """
     Retrieve a list of reductions for a given instrument.
     \f
