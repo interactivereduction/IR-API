@@ -82,6 +82,7 @@ async def get_reductions_for_instrument(
     offset: int = 0,
     order_by: Literal["reduction_start", "reduction_end", "reduction_state", "id"] = "reduction_start",
     order_direction: Literal["asc", "desc"] = "desc",
+    include_runs: bool = False,
 ) -> List[ReductionResponse]:
     """
     Retrieve a list of reductions for a given instrument.
@@ -92,12 +93,15 @@ async def get_reductions_for_instrument(
     :param offset: optional offset for the list of reductions (default is 0)
     :param order_by: Literal["reduction_start", "reduction_end", "reduction_state", "id"]
     :param order_direction: Literal["asc", "desc"]
+    :param include_runs: bool
     :return: List of ReductionResponse objects
     """
     instrument = instrument.upper()
     reductions = get_reductions_by_instrument(
         instrument, limit=limit, offset=offset, order_by=order_by, order_direction=order_direction
     )
+    if include_runs:
+        return [ReductionWithRunsResponse.from_reduction(r) for r in reductions]
     return [ReductionResponse.from_reduction(r) for r in reductions]
 
 
@@ -190,7 +194,9 @@ async def get_runs_for_instrument(
     instrument: str,
     limit: int = 0,
     offset: int = 0,
-    order_by: Literal["experiment_number", "run_end", "run_start", "good_frames", "raw_frames", "id"] = "run_start",
+    order_by: Literal[
+        "experiment_number", "run_end", "run_start", "good_frames", "raw_frames", "id", "filename"
+    ] = "run_start",
     order_direction: Literal["asc", "desc"] = "desc",
 ) -> List[RunResponse]:
     """

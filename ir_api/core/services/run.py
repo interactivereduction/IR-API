@@ -30,7 +30,9 @@ def get_runs_by_instrument(
     instrument: str,
     limit: int = 0,
     offset: int = 0,
-    order_by: Literal["experiment_number", "run_end", "run_start", "good_frames", "raw_frames", "id"] = "run_start",
+    order_by: Literal[
+        "experiment_number", "run_end", "run_start", "good_frames", "raw_frames", "id", "filename"
+    ] = "run_start",
     order_direction: Literal["asc", "desc"] = "desc",
 ) -> Sequence[Run]:
     """
