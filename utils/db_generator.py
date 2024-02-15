@@ -33,6 +33,7 @@ def main():
     ir_provider = IR_FAKER_PROVIDER
 
     if "localhost" not in ENGINE.url:
+        # Someone already overwrote all of production with this. Proceed with caution.
         sys.exit(f"Script is not pointing at localhost {ENGINE.url}: Don't even think about it")
 
     Base.metadata.drop_all(ENGINE)
