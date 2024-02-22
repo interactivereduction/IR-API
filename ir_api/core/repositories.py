@@ -83,4 +83,3 @@ class Repo(Generic[T]):
         with self._session() as session:
             result = session.execute(select(func.count()).select_from(spec.value))
             return result.scalar() if result else 0
-
