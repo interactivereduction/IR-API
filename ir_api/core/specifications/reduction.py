@@ -86,7 +86,7 @@ class ReductionSpecification(Specification[Reduction]):
                     else self.value.order_by(Run.title.asc())
                 )
             case _:
-                apply_ordering(self.value, self.model, order_by, order_direction)
+                self.value = apply_ordering(self.value, self.model, order_by, order_direction)
 
         return self
 
