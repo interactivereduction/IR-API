@@ -3,7 +3,6 @@ Provides a generic repository class for performing database operations.
 """
 import logging
 import os
-from pprint import pprint
 from typing import Generic, TypeVar, Sequence, Optional
 
 from sqlalchemy import select, func, create_engine, NullPool
@@ -13,7 +12,6 @@ from sqlalchemy.orm import sessionmaker
 from ir_api.core.exceptions import NonUniqueRecordError
 from ir_api.core.model import Base
 from ir_api.core.specifications.base import Specification
-from ir_api.core.specifications.run import RunSpecification
 
 T = TypeVar("T", bound=Base)
 
@@ -86,6 +84,3 @@ class Repo(Generic[T]):
             result = session.execute(select(func.count()).select_from(spec.value))
             return result.scalar() if result else 0
 
-
-repo = Repo()
-pprint(repo.find(RunSpecification().all(limit=10, order_by="id", order_direction="desc")))
