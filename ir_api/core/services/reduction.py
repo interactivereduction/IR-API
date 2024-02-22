@@ -8,7 +8,7 @@ from ir_api.core.model import Reduction
 from ir_api.core.repositories import Repo
 from ir_api.core.specifications.reduction import ReductionSpecification
 
-ORDER_LITERALS = Literal[
+OrderField = Literal[
     "reduction_start",
     "reduction_end",
     "reduction_state",
@@ -27,7 +27,7 @@ def get_reductions_by_instrument(
     instrument: str,
     limit: int = 0,
     offset: int = 0,
-    order_by: ORDER_LITERALS = "reduction_start",
+    order_by: OrderField = "reduction_start",
     order_direction: Literal["asc", "desc"] = "desc",
 ) -> Sequence[Reduction]:
     """

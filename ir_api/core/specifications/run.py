@@ -5,11 +5,12 @@ It includes the RunSpecification class which allows for building complex queries
 for Run entities based on various criteria such as instrument, limit, offset,
 order by, and order direction.
 """
+# pylint: disable=unused-argument
+# The limit and offsets in specifications will incorrectly flag as unused. They are used when they are intercepted by
+# the paginate decorator
 from __future__ import annotations
 
 from typing import Type, Literal
-
-from sqlalchemy import select
 
 from ir_api.core.model import Run, Instrument
 from ir_api.core.specifications.base import Specification, paginate, apply_ordering
@@ -22,9 +23,6 @@ class RunSpecification(Specification[Run]):
     Allows for filtering and ordering runs based on different attributes such as
     instrument name, experiment number, run start/end times, and more.
     """
-
-    def __init__(self):
-        self.value = select(Run)
 
     @property
     def model(self) -> Type[Run]:

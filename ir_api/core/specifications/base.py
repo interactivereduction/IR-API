@@ -88,6 +88,9 @@ class Specification(Generic[T], ABC):
     that define how to retrieve instances of ORM models based on various criteria.
     """
 
+    def __init__(self):
+        self.value: Select[Tuple[T]] = select(self.model)
+
     @property
     @abstractmethod
     def model(self) -> Type[T]:
@@ -123,15 +126,15 @@ class Specification(Generic[T], ABC):
 
         return self
 
-    def by_id(self, id: int) -> Specification[T]:
+    def by_id(self, id_: int) -> Specification[T]:
         """
         Filters the query to select only the record with the specified primary key ID.
 
         This method is a common specification that can be used to retrieve a single instance
         of the model based on its primary key.
 
-        :param id: The primary key ID of the model instance to retrieve.
+        :param id_: The primary key ID of the model instance to retrieve.
         :return: An instance of the specification class with the query filtered by the specified ID.
         """
-        self.value = select(self.model).where(self.model.id == id)
+        self.value = select(self.model).where(self.model.id == id_)
         return self

@@ -77,7 +77,7 @@ async def get_pre_script_by_sha(instrument: str, sha: str, reduction_id: Optiona
     return get_script_by_sha(instrument, sha, reduction_id).to_response()
 
 
-ORDER_LITERALS = Literal[
+OrderField = Literal[
     "reduction_start",
     "reduction_end",
     "reduction_state",
@@ -95,7 +95,7 @@ async def get_reductions_for_instrument(
     instrument: str,
     limit: int = 0,
     offset: int = 0,
-    order_by: ORDER_LITERALS = "reduction_start",
+    order_by: OrderField = "reduction_start",
     order_direction: Literal["asc", "desc"] = "desc",
     include_runs: bool = False,
 ) -> List[ReductionResponse] | List[ReductionWithRunsResponse]:

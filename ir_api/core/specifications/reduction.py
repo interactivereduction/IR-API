@@ -5,18 +5,19 @@ It includes the ReductionSpecification class, which facilitates the construction
 for fetching Reduction entities based on various criteria such as instrument name, experiment number,
 and ordering preferences.
 """
+# pylint: disable=unused-argument
+# The limit and offsets in specifications will incorrectly flag as unused. They are used when they are intercepted by
+# the paginate decorator
 from __future__ import annotations
 
-from typing import Type, Tuple, Optional, Literal
-
-from sqlalchemy import select, Select
+from typing import Type, Optional, Literal, Union
 
 from ir_api.core.model import Reduction, Instrument, Run, run_reduction_junction_table
 from ir_api.core.specifications.base import Specification, paginate, apply_ordering
 
 ReductionOrderField = Literal["reduction_start", "reduction_end", "reduction_state", "id", "output"]
 RunOrderField = Literal["run_start", "run_end", "experiment_number", "experiment_title"]
-JointRunReductionOrderField = RunOrderField | ReductionOrderField
+JointRunReductionOrderField = Union[RunOrderField, ReductionOrderField]
 
 
 class ReductionSpecification(Specification[Reduction]):
@@ -26,9 +27,6 @@ class ReductionSpecification(Specification[Reduction]):
     This class supports filtering and ordering of reductions based on attributes of both
     the Reduction and Run entities, including support for joint attributes.
     """
-
-    def __init__(self) -> None:
-        self.value: Select[Tuple[Reduction]] = select(Reduction)
 
     @property
     def model(self) -> Type[Reduction]:
@@ -50,7 +48,8 @@ class ReductionSpecification(Specification[Reduction]):
         :param limit: The maximum number of reductions to return. None indicates no limit.
         :param offset: The number of reductions to skip before starting to return the results. None for no offset.
         :param order_by: The attribute to order the reductions by. Can be attributes of Reduction or Run entities.
-        :param order_direction: The direction to order the reductions, either 'asc' for ascending or 'desc' for descending.
+        :param order_direction: The direction to order the reductions, either 'asc' for ascending or 'desc' for
+        descending.
         :return: An instance of ReductionSpecification with the applied filters and ordering.
         """
         self.value = (
@@ -106,7 +105,8 @@ class ReductionSpecification(Specification[Reduction]):
         :param limit: The maximum number of reductions to return. None indicates no limit.
         :param offset: The number of reductions to skip before starting to return the results. None for no offset.
         :param order_by: The attribute of the Reduction entity to order the reductions by.
-        :param order_direction: The direction to order the reductions, either 'asc' for ascending or 'desc' for descending.
+        :param order_direction: The direction to order the reductions, either 'asc' for ascending or 'desc' for
+        descending.
         :return: An instance of ReductionSpecification with the applied filters and ordering.
         """
 
