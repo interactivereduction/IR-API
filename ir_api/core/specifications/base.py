@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from functools import wraps
-from typing import TypeVar, Generic, Type, Literal, Tuple
+from typing import TypeVar, Generic, Type, Literal, Tuple, Callable, Any
 
 from sqlalchemy import select, Select
 
@@ -61,7 +61,7 @@ def apply_ordering(
     return spec_value
 
 
-def paginate(func):
+def paginate(func: Callable[..., Any]) -> Callable[..., Any]:
     """
     This decorator allows any specification method to accept the args limit: int and offset: int
     and will apply them to the specifications query automagically. This means that the limit and offset args
@@ -71,7 +71,7 @@ def paginate(func):
     """
 
     @wraps(func)
-    def wrapper(self, *args, **kwargs):
+    def wrapper(self: Specification[T], *args: Tuple[Any], **kwargs: int) -> Any:
         limit = kwargs.get("limit", 0)
         offset = kwargs.get("offset", 0)
         self.value = apply_pagination(self.value, limit, offset)
@@ -88,7 +88,7 @@ class Specification(Generic[T], ABC):
     that define how to retrieve instances of ORM models based on various criteria.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.value: Select[Tuple[T]] = select(self.model)
 
     @property
