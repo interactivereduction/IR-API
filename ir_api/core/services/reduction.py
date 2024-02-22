@@ -4,17 +4,30 @@ Service Layer for reductions
 from typing import Sequence, Literal
 
 from ir_api.core.exceptions import MissingRecordError
-from ir_api.core.model import Reduction, Run, Instrument
-from ir_api.core.repositories import ReductionRepo
+from ir_api.core.model import Reduction
+from ir_api.core.repositories import Repo
+from ir_api.core.specifications.reduction import ReductionSpecification
 
-_REDUCTION_REPO = ReductionRepo()
+ORDER_LITERALS = Literal[
+    "reduction_start",
+    "reduction_end",
+    "reduction_state",
+    "id",
+    "run_start",
+    "run_end",
+    "output",
+    "experiment_number",
+    "experiment_title",
+]
+
+_REPO: Repo[Reduction] = Repo()
 
 
 def get_reductions_by_instrument(
     instrument: str,
     limit: int = 0,
     offset: int = 0,
-    order_by: Literal["reduction_start", "reduction_end", "reduction_state", "id"] = "reduction_start",
+    order_by: ORDER_LITERALS = "reduction_start",
     order_direction: Literal["asc", "desc"] = "desc",
 ) -> Sequence[Reduction]:
     """
@@ -27,12 +40,10 @@ def get_reductions_by_instrument(
     :param order_by: (str) Field to order by.
     :return: Sequence of Reductions for an instrument
     """
-    return _REDUCTION_REPO.find(
-        lambda reduction: reduction.runs.any(Run.instrument.has(Instrument.instrument_name == instrument)),
-        limit=limit,
-        offset=offset,
-        order_by=order_by,
-        order_direction=order_direction,
+    return _REPO.find(
+        ReductionSpecification().by_instrument(
+            instrument=instrument, limit=limit, offset=offset, order_by=order_by, order_direction=order_direction
+        )
     )
 
 
@@ -43,7 +54,7 @@ def get_reduction_by_id(reduction_id: int) -> Reduction:
     :return: The reduction
     :raises: MissingRecordError when no reduction for that ID is found
     """
-    reduction = _REDUCTION_REPO.find_one(lambda reduction: reduction.id == reduction_id)
+    reduction = _REPO.find_one(ReductionSpecification().by_id(reduction_id))
     if reduction is None:
         raise MissingRecordError(f"No Reduction for id {reduction_id}")
     return reduction
@@ -65,12 +76,14 @@ def get_reductions_by_experiment_number(
     :param order_by: (str) Field to order by.
     :return: List of reductions
     """
-    return _REDUCTION_REPO.find(
-        lambda reduction: reduction.runs.any(Run.experiment_number == experiment_number),
-        limit=limit,
-        offset=offset,
-        order_by=order_by,
-        order_direction=order_direction,
+    return _REPO.find(
+        ReductionSpecification().by_experiment_number(
+            experiment_number=experiment_number,
+            limit=limit,
+            offset=offset,
+            order_direction=order_direction,
+            order_by=order_by,
+        )
     )
 
 
@@ -80,9 +93,7 @@ def count_reductions_by_instrument(instrument: str) -> int:
     :param instrument: Instrument to count from
     :return: Number of reductions
     """
-    return _REDUCTION_REPO.count(
-        lambda reduction: reduction.runs.any(Run.instrument.has(Instrument.instrument_name == instrument))
-    )
+    return _REPO.count(ReductionSpecification().by_instrument(instrument=instrument))
 
 
 def count_reductions() -> int:
@@ -90,4 +101,4 @@ def count_reductions() -> int:
     Count the total number of reductions
     :return: (int) number of reductions
     """
-    return _REDUCTION_REPO.count()
+    return _REPO.count(ReductionSpecification().all())

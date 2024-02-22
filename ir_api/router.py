@@ -77,12 +77,25 @@ async def get_pre_script_by_sha(instrument: str, sha: str, reduction_id: Optiona
     return get_script_by_sha(instrument, sha, reduction_id).to_response()
 
 
+ORDER_LITERALS = Literal[
+    "reduction_start",
+    "reduction_end",
+    "reduction_state",
+    "id",
+    "run_start",
+    "run_end",
+    "output",
+    "experiment_number",
+    "experiment_title",
+]
+
+
 @ROUTER.get("/instrument/{instrument}/reductions")
 async def get_reductions_for_instrument(
     instrument: str,
     limit: int = 0,
     offset: int = 0,
-    order_by: Literal["reduction_start", "reduction_end", "reduction_state", "id"] = "reduction_start",
+    order_by: ORDER_LITERALS = "reduction_start",
     order_direction: Literal["asc", "desc"] = "desc",
     include_runs: bool = False,
 ) -> List[ReductionResponse] | List[ReductionWithRunsResponse]:

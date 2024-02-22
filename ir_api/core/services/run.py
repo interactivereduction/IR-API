@@ -3,10 +3,11 @@ Service Layer for runs
 """
 from typing import Sequence, Literal
 
-from ir_api.core.model import Instrument, Run
-from ir_api.core.repositories import RunRepo
+from ir_api.core.model import Run
+from ir_api.core.repositories import Repo
+from ir_api.core.specifications.run import RunSpecification
 
-_RUN_REPO = RunRepo()
+_REPO: Repo[Run] = Repo()
 
 
 def get_total_run_count() -> int:
@@ -14,7 +15,7 @@ def get_total_run_count() -> int:
     Get the total number of runs
     :return: The number of runs
     """
-    return _RUN_REPO.count()
+    return _REPO.count(RunSpecification().all())
 
 
 def get_run_count_by_instrument(instrument: str) -> int:
@@ -23,7 +24,7 @@ def get_run_count_by_instrument(instrument: str) -> int:
     :param instrument: The instrument
     :return: The number of runs
     """
-    return _RUN_REPO.count(lambda run: run.instrument.has(Instrument.instrument_name == instrument))
+    return _REPO.count(RunSpecification().by_instrument(instrument))
 
 
 def get_runs_by_instrument(
@@ -44,10 +45,8 @@ def get_runs_by_instrument(
     :param order_direction: optional direction to order by in
     :return: The sequence of runs
     """
-    return _RUN_REPO.find(
-        lambda run: run.instrument.has(Instrument.instrument_name == instrument),
-        limit=limit,
-        offset=offset,
-        order_by=order_by,
-        order_direction=order_direction,
+    return _REPO.find(
+        RunSpecification().by_instrument(
+            instrument, limit=limit, offset=offset, order_by=order_by, order_direction=order_direction
+        )
     )
