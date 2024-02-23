@@ -1,6 +1,7 @@
 """
 Global fixture for e2e tests
 """
+
 import pytest
 
 # pylint: disable=wrong-import-order

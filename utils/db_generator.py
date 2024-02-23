@@ -1,6 +1,7 @@
 """
 Script to generate a database for a development environment
 """
+
 import os
 import random
 import sys

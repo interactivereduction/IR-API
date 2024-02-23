@@ -1,6 +1,7 @@
 """
 Module for Tosca script transform
 """
+
 import logging
 
 from ir_api.core.model import Reduction

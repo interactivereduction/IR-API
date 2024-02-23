@@ -1,4 +1,5 @@
 """Common transform for mantid scripts"""
+
 import logging
 import os
 

@@ -1,6 +1,7 @@
 """
 PreScript contains the PreScript definition. As it is not strictly a model, it does not belong in models.py
 """
+
 from typing import Optional
 
 from ir_api.core.responses import PreScriptResponse
