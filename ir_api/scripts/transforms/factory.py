@@ -1,6 +1,7 @@
 """
 This module provides a factory function to get the appropriate transform for a given instrument.
 """
+
 import logging
 
 from ir_api.scripts.transforms.mari_transforms import MariTransform

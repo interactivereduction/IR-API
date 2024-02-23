@@ -1,6 +1,7 @@
 """
 Service Layer for reductions
 """
+
 from typing import Sequence, Literal
 
 from ir_api.core.exceptions import MissingRecordError

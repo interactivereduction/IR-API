@@ -1,6 +1,7 @@
 """
 end-to-end tests
 """
+
 # pylint: disable=line-too-long, wrong-import-order
 from unittest.mock import patch
 

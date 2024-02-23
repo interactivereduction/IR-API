@@ -2,6 +2,7 @@
 Inegration tests for data access.
 Requires postgres running with user postgres and password password
 """
+
 from datetime import datetime
 
 import pytest

@@ -1,6 +1,7 @@
 """
 Test for tosca transform
 """
+
 from unittest.mock import Mock
 
 from ir_api.scripts.pre_script import PreScript

@@ -1,6 +1,7 @@
 """
 Tests for reduction service
 """
+
 from typing import Callable
 from unittest.mock import patch, Mock
 
