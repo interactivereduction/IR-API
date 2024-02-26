@@ -1,6 +1,7 @@
 """
 Tests for the transform factory function
 """
+
 import pytest
 
 from ir_api.scripts.transforms.factory import get_transform_for_instrument

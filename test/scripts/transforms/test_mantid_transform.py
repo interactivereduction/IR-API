@@ -1,6 +1,7 @@
 """
 Test case for mantid transform
 """
+
 import os
 from unittest.mock import Mock
 
