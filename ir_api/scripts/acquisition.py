@@ -1,6 +1,7 @@
 """
 Acquisition module contains all the functionality for obtaining the script locally and from the remote repository
 """
+
 import logging
 import os
 from typing import Optional

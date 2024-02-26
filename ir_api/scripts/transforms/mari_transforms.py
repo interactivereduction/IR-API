@@ -2,6 +2,7 @@
 Module provides the MariTransform class, an implementation of the Transform abstract base class for MARI instrument
 scripts.
 """
+
 import logging
 from typing import List
 

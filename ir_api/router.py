@@ -1,6 +1,7 @@
 """
 Module containing the REST endpoints
 """
+
 from typing import Optional, List, Literal
 
 from fastapi import APIRouter

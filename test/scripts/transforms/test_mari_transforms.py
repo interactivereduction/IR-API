@@ -1,6 +1,7 @@
 """
 Test cases for MariTransform
 """
+
 from unittest.mock import Mock
 
 import pytest

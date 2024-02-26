@@ -1,6 +1,7 @@
 """
 end 2 end test cases for script acquisition
 """
+
 # pylint: disable=line-too-long, wrong-import-order
 import re
 from unittest.mock import patch
