@@ -98,6 +98,7 @@ def setup() -> None:
         session.add(TEST_RUN_1)
         session.add(TEST_RUN_2)
         session.add(TEST_RUN_3)
+        session.add(TEST_REDUCTION)
         session.commit()
         session.refresh(TEST_SCRIPT)
         session.refresh(TEST_INSTRUMENT_1)

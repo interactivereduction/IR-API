@@ -3,6 +3,7 @@ Module containing the REST endpoints
 """
 from __future__ import annotations
 
+
 from typing import Optional, List, Literal
 
 from fastapi import APIRouter

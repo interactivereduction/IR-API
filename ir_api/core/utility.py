@@ -1,4 +1,5 @@
 """Collection of utility functions"""
+
 import functools
 from typing import Callable, Any, TypeVar, cast
 

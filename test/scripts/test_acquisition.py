@@ -1,6 +1,7 @@
 """
 Tests for script acquisition
 """
+
 import os
 from unittest.mock import Mock, patch, mock_open, MagicMock
 

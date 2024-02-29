@@ -2,6 +2,7 @@
 This module contains classes and enums that define the structure of the database tables and relationships for storing
 information about instruments, runs, scripts, and reductions.
 """
+
 from __future__ import annotations
 
 import enum

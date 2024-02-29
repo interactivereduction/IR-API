@@ -1,17 +1,12 @@
 """
 API Level Exception Handlers.
 """
+
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from ir_api.core.exceptions import (
-    MissingRecordError,
-    MissingScriptError,
-    UnsafePathError,
-)
 
-
-async def missing_record_handler(_: Request, __: MissingRecordError) -> JSONResponse:
+async def missing_record_handler(_: Request, __: Exception) -> JSONResponse:
     """
     Automatically return a 404 when a MissingRecordError is raised
     :param _:
@@ -24,7 +19,7 @@ async def missing_record_handler(_: Request, __: MissingRecordError) -> JSONResp
     )
 
 
-async def missing_script_handler(_: Request, __: MissingScriptError) -> JSONResponse:
+async def missing_script_handler(_: Request, __: Exception) -> JSONResponse:
     """
     Automatically return a 404 when the script could not be found locally or remote
     :param _:
@@ -39,7 +34,7 @@ async def missing_script_handler(_: Request, __: MissingScriptError) -> JSONResp
     )
 
 
-async def unsafe_path_handler(_: Request, __: UnsafePathError) -> JSONResponse:
+async def unsafe_path_handler(_: Request, __: Exception) -> JSONResponse:
     """
     Automatically return 400 status code when an unsafe path error is raised
     :param _:

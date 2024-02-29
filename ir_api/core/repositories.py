@@ -1,6 +1,7 @@
 """
 Provides a generic repository class for performing database operations.
 """
+
 import logging
 import os
 from typing import Generic, TypeVar, Sequence, Optional
