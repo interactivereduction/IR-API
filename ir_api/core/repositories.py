@@ -68,10 +68,10 @@ class Repo(Generic[T]):
             try:
                 return session.execute(spec.value).scalars().one()
             except NoResultFound:
-                logger.info("No result found for IMPROVE THIS LOGGING")
+                logger.exception("No result found for %s", spec.value)
                 return None
             except MultipleResultsFound as exc:
-                logger.error("Non unique record found for IMPROVE THIS LOGGING")
+                logger.exception("Non unique record found for %s", spec.value)
                 raise NonUniqueRecordError() from exc
 
     def count(self, spec: Specification[T]) -> int:
