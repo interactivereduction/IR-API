@@ -15,8 +15,8 @@ from typing import Type, Optional, Literal, Union
 from ir_api.core.model import Reduction, Instrument, Run, run_reduction_junction_table
 from ir_api.core.specifications.base import Specification, paginate, apply_ordering
 
-ReductionOrderField = Literal["reduction_start", "reduction_end", "reduction_state", "id", "output"]
-RunOrderField = Literal["run_start", "run_end", "experiment_number", "experiment_title"]
+ReductionOrderField = Literal["reduction_start", "reduction_end", "reduction_state", "id", "reduction_outputs"]
+RunOrderField = Literal["run_start", "run_end", "experiment_number", "experiment_title", "filename"]
 JointRunReductionOrderField = Union[RunOrderField, ReductionOrderField]
 
 
@@ -60,6 +60,12 @@ class ReductionSpecification(Specification[Reduction]):
         )
 
         match order_by:
+            case "filename":
+                self.value = (
+                    self.value.order_by(Run.filename.desc())
+                    if order_direction == "desc"
+                    else self.value.order_by(Run.filename.asc())
+                )
             case "run_start":
                 self.value = (
                     self.value.order_by(Run.run_start.desc())

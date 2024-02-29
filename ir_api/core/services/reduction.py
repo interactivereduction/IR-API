@@ -15,9 +15,10 @@ OrderField = Literal[
     "id",
     "run_start",
     "run_end",
-    "output",
+    "reduction_outputs",
     "experiment_number",
     "experiment_title",
+    "filename",
 ]
 
 _REPO: Repo[Reduction] = Repo()
