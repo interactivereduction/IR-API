@@ -5,6 +5,7 @@ It includes the ReductionSpecification class, which facilitates the construction
 for fetching Reduction entities based on various criteria such as instrument name, experiment number,
 and ordering preferences.
 """
+
 # pylint: disable=unused-argument
 # The limit and offsets in specifications will incorrectly flag as unused. They are used when they are intercepted by
 # the paginate decorator

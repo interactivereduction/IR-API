@@ -7,7 +7,6 @@ allowing for reusable and composable query objects. This approach aims to separa
 the concerns of how objects are retrieved from the database from the rest of the application logic.
 """
 
-
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
