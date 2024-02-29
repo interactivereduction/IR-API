@@ -5,6 +5,7 @@ It includes the RunSpecification class which allows for building complex queries
 for Run entities based on various criteria such as instrument, limit, offset,
 order by, and order direction.
 """
+
 # pylint: disable=unused-argument
 # The limit and offsets in specifications will incorrectly flag as unused. They are used when they are intercepted by
 # the paginate decorator

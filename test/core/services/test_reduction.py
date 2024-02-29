@@ -1,6 +1,7 @@
 """
 Tests for reduction service
 """
+
 from unittest.mock import patch, Mock
 
 import pytest

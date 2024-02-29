@@ -4,6 +4,7 @@ Requires postgres running with user postgres and password password
 Tests designed to test every specification with it's respective repo
 with a live db connection
 """
+
 import datetime
 
 import pytest
