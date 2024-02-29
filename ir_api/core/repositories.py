@@ -1,208 +1,89 @@
 """
-This module defines repository classes for handling data access operations on
-database tables mapped to SQLAlchemy ORM models for the `Script`, `Reduction`, `Run`,
-and `Instrument` entities.
+Provides a generic repository class for performing database operations.
 """
 
 import logging
 import os
-from abc import ABC, abstractmethod
-from typing import Generic, TypeVar, Type, Optional, Callable, Sequence, Union, Literal
+from typing import Generic, TypeVar, Sequence, Optional
 
-from sqlalchemy import create_engine, select, LambdaElement, ColumnElement, NullPool
-from sqlalchemy.exc import MultipleResultsFound, NoResultFound
+from sqlalchemy import select, func, create_engine, NullPool
+from sqlalchemy.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql.functions import func
 
 from ir_api.core.exceptions import NonUniqueRecordError
-from ir_api.core.model import Script, Reduction, Run, Instrument, Base
-
-logger = logging.getLogger(__name__)
+from ir_api.core.model import Base
+from ir_api.core.specifications.base import Specification
 
 T = TypeVar("T", bound=Base)
+
+logger = logging.getLogger(__name__)
 
 DB_USERNAME = os.environ.get("DB_USERNAME", "postgres")
 DB_PASSWORD = os.environ.get("DB_PASSWORD", "password")
 DB_IP = os.environ.get("DB_IP", "localhost")
+
 ENGINE = create_engine(
     f"postgresql+psycopg2://{DB_USERNAME}:{DB_PASSWORD}@{DB_IP}:5432/interactive-reduction",
     poolclass=NullPool,
-    echo=True,
 )
+
 SESSION = sessionmaker(ENGINE)
 
 
-class ReadOnlyRepo(ABC, Generic[T]):
+class Repo(Generic[T]):
     """
-    A generic read-only repository class for handling data access operations on
-    database tables mapped to SQLAlchemy ORM models.
+    A generic repository class for performing database operations on entities of type T.
 
-    This class should be subclassed and the `_model_type` property should be implemented
-    to provide the specific ORM model for the corresponding repository.
+    This class provides methods to find one or multiple entities based on a specification,
+    and to count entities matching a specification. It is designed to work with any entity
+    that inherits from the base model class.
     """
 
     def __init__(self) -> None:
         self._session = SESSION
 
-    @property
-    @abstractmethod
-    def _model_type(self) -> Type[T]:
-        pass
-
-    def find_one(
-        self, filter_expression: Callable[[Type[T]], Union[LambdaElement, ColumnElement["bool"]]]
-    ) -> Optional[T]:
+    def find(self, spec: Specification[T]) -> Sequence[T]:
         """
-        Find the single entity, if more than one is returned, a NonUniqueRecordError will be raised
+        Finds entities matching the given specification.
 
-        :param filter_expression: (Callable[[Type[T]], ColumnElement["bool"]]) The filter expression to be applied.
-        :return: (Optional[T]) The found entity, or None if not found.
+        :param spec: A specification defining the query criteria.
+        :return: A sequence of entities of type T that match the specification.
         """
-        logger.info(
-            "Finding one: %s",
-            self._model_type,
-        )
         with self._session() as session:
-            query = select(self._model_type)
-            query = query.filter(filter_expression(self._model_type))
-            try:
-                return session.execute(query).scalars().one()
-            except NoResultFound:
-                logger.info("No result found for %s", self._model_type)
-                return None
-            except MultipleResultsFound as exc:
-                logger.error("Non unique record found for filter: %s", filter_expression)
-                raise NonUniqueRecordError() from exc
-
-    def count(
-        self, filter_expression: Optional[Callable[[Type[T]], Union[LambdaElement, ColumnElement["bool"]]]] = None
-    ) -> int:
-        """
-        Count the existing entities, optionally matching a given filter expression
-        :param filter_expression: Optional filter expression
-        :return: The count
-        """
-        logger.info("Counting %s", self._model_type)
-        with self._session() as session:
-            # pylint: disable = not-callable
-            query = select(func.count()).select_from(self._model_type)
-            # pylint: enable = not-callable
-            query = query.filter(filter_expression(self._model_type)) if filter_expression else query
-            result = session.execute(query).scalars().first()
-            return result if result else 0
-
-    def find(
-        self,
-        filter_expression: Callable[[Type[T]], Union[LambdaElement, ColumnElement["bool"]]],
-        limit: int = 0,
-        offset: int = 0,
-        order_by: Optional[str] = None,
-        order_direction: Literal["asc", "desc"] = "asc",
-    ) -> Sequence[T]:
-        """
-        Find entities that match a specified filter expression.
-
-        :param filter_expression: (Callable[[Type[T]], ColumnElement["bool"]]) The filter expression to be applied.
-        :param limit: (int) The optional number to limit the sequence by
-        :param offset: (int) The optional number to offset the results by
-        :param order_by: (ColumnElement) Optional field to order by
-        :param order_direction: Literal["asc", "desc"] Optional order direction, defaults to ascending
-        :return: (Sequence[T]) A sequence of found entities.
-        """
-        logger.info("Finding %s", self._model_type)
-        with self._session() as session:
-            query = select(self._model_type)
-            query = query.filter(filter_expression(self._model_type))
-            if order_by:
-                column_element = getattr(self._model_type, order_by)
-                query = (
-                    query.order_by(column_element.asc())
-                    if order_direction == "asc"
-                    else query.order_by(column_element.desc())
-                )
-            if offset:
-                query = query.offset(offset)
-
-            if limit:
-                query = query.limit(limit)
-
+            query = spec.value
             return session.execute(query).scalars().all()
 
-
-class CRUDRepo(ReadOnlyRepo[T], ABC):
-    """
-    A generic repository class for handling CRUD operations (Create, Read, Update, Delete) on
-    database tables mapped to SQLAlchemy ORM models. Inherits from `ReadOnlyRepo`.
-
-    This class should be subclassed and the `_model_type`, `_entity_type`, and `_transformer`
-    properties should be implemented to provide the specific ORM model, domain entity, and
-    transformer for the corresponding repository.
-    """
-
-    def insert(self, entity: T) -> None:
+    def find_one(self, spec: Specification[T]) -> Optional[T]:
         """
-        Insert a new entity into the database.
+        Finds a single entity matching the given specification.
 
-        :param entity: (U) The entity to be inserted.
+        If no entities are found, None is returned. If multiple entities are found,
+        a NonUniqueRecordError is raised.
+
+        :param spec: A specification defining the query criteria.
+        :return: An entity of type T that matches the specification, or None if no entities are found.
+        :raises NonUniqueRecordError: If more than one entity matches the specification.
         """
-        # TODO: Phase 2
+        with self._session() as session:
+            try:
+                return session.execute(spec.value).scalars().one()
+            except NoResultFound:
+                logger.exception("No result found for %s", spec.value)
+                return None
+            except MultipleResultsFound as exc:
+                logger.exception("Non unique record found for %s", spec.value)
+                raise NonUniqueRecordError() from exc
 
-    def update(self, model: T) -> None:
+    def count(self, spec: Specification[T]) -> int:
         """
-        Update an existing entity in the database.
+        Counts the number of entities matching the given specification.
 
-        :param model: (U) The entity with updated values.
+        :param spec: A specification defining the query criteria.
+        :return: The count of entities of type T that match the specification.
         """
-        # TODO: Phase 2
-
-    def delete(self, entity: T) -> None:
-        """
-        Delete an existing entity from the database.
-
-        :param entity: (U) The entity to be deleted.
-        """
-        # TODO: Phase 2
-
-
-class ScriptRepo(ReadOnlyRepo[Script]):
-    """
-    A specific repository class for handling data access operations for the `Script` entity.
-    Inherits from `ReadOnlyRepo`.
-    """
-
-    @property
-    def _model_type(self) -> Type[Script]:
-        return Script
-
-
-class ReductionRepo(ReadOnlyRepo[Reduction]):
-    """
-    A specific repository class for handling data access operations for the `Reduction` entity.
-    Inherits from `ReadOnlyRepo`.
-    """
-
-    @property
-    def _model_type(self) -> Type[Reduction]:
-        return Reduction
-
-
-class RunRepo(ReadOnlyRepo[Run]):
-    """
-    A specific repository class for handling data access operations for the `Run` entity.
-    Inherits from `ReadOnlyRepo`.
-    """
-
-    @property
-    def _model_type(self) -> Type[Run]:
-        return Run
-
-
-class InstrumentRepo(ReadOnlyRepo[Instrument]):
-    """
-    A specific repository class for handling data access operations for the `Instrument` entity.
-    Inherits from `ReadOnlyRepo`.
-    """
-
-    @property
-    def _model_type(self) -> Type[Instrument]:
-        return Instrument
+        with self._session() as session:
+            # pylint: disable = not-callable
+            # mypy does not like these, but they are valid.
+            result = session.execute(select(func.count()).select_from(spec.value))  # type: ignore
+            # pylint: enable = not-callable
+            return result.scalar() if result else 0  # type: ignore

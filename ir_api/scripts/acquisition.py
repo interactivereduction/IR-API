@@ -9,7 +9,9 @@ from typing import Optional
 import requests
 
 from ir_api.core.exceptions import MissingRecordError, MissingScriptError
-from ir_api.core.repositories import ReductionRepo
+from ir_api.core.model import Reduction
+from ir_api.core.repositories import Repo
+from ir_api.core.specifications.reduction import ReductionSpecification
 from ir_api.core.utility import forbid_path_characters
 from ir_api.scripts.pre_script import PreScript
 from ir_api.scripts.transforms.factory import get_transform_for_instrument
@@ -136,9 +138,9 @@ def _transform_script(instrument: str, reduction_id: int, script: PreScript) -> 
     :param script: The Pre script
     :return: None
     """
-    reduction_repo = ReductionRepo()
+    reduction_repo: Repo[Reduction] = Repo()
     logger.info("Querying for reduction: %s", reduction_id)
-    reduction = reduction_repo.find_one(lambda r: r.id == reduction_id)
+    reduction = reduction_repo.find_one(ReductionSpecification().by_id(reduction_id))
     if not reduction:
         logger.info("Reduction not found")
         raise MissingRecordError(f"No reduction found with id: {reduction_id}")
