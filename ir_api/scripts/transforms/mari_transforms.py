@@ -2,6 +2,7 @@
 Module provides the MariTransform class, an implementation of the Transform abstract base class for MARI instrument
 scripts.
 """
+
 import logging
 
 from ir_api.core.model import Reduction

@@ -91,14 +91,9 @@ def get_transform_for_instrument(instrument: str) -> Transform:
 ```
 
 ## Data Access Pattern
-The api is implementing a trimmed down version of the repository pattern. It is trimmed down in that, there is no data
-mapper pattern being used, and therefore the seperation of business and data layers is not complete as there is no
-separation of domain entities and database models. It also does not implement generalised search criteria and the api 
-depends directly on `LambdaElement` criteria.
-However, this trimmed down implementation does offer the other benefits of the pattern while reducing some of the 
-drawbacks. It provides a unified data access api, which significantly reduces complexity in querying data and testing
-while mocking data access. By being trimmed down, the increased complexity that can arise from the implementation of 
-model mappers/transformers is reduced.  
+The api is implementing a repository and specification pattern.
+All queries are defined within specifications, basic ordering is available in the base specification module via a func
+and a `@paginate` decorator is available to provide pagination to any specification.
 
 ## Database Generation Script for Development Environment
 ### Overview

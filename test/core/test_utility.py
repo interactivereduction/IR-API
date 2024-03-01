@@ -1,6 +1,7 @@
 """
 Tests for utility functions
 """
+
 import pytest
 
 from ir_api.core.exceptions import UnsafePathError

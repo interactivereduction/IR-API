@@ -7,6 +7,7 @@ Classes:
 Transform (ABC): An abstract base class that defines the interface for applying transformations on a script.
 MissingTransformError (Exception): A custom exception for handling cases where a required transform is missing.
 """
+
 from abc import ABC, abstractmethod
 from typing import List, Union
 

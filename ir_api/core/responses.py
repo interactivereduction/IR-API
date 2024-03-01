@@ -1,6 +1,7 @@
 """
 responses module contains api response definitions
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -119,7 +120,6 @@ class ReductionWithRunsResponse(ReductionResponse):
         :return: The ReductionWithRunsResponse Object
         """
         script = ScriptResponse(value=reduction.script.script) if reduction.script else None
-
         return ReductionWithRunsResponse(
             reduction_start=reduction.reduction_start,
             reduction_end=reduction.reduction_end,

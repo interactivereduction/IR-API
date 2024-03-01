@@ -1,6 +1,7 @@
 """
 Tests for script acquisition
 """
+
 import os
 from unittest.mock import Mock, patch, mock_open, MagicMock
 
@@ -193,7 +194,7 @@ def test_get_script_for_reduction_no_reduction_id(mock_get_by_name):
 
 
 @patch("ir_api.scripts.acquisition.get_transform_for_instrument")
-@patch("ir_api.scripts.acquisition.ReductionRepo")
+@patch("ir_api.scripts.acquisition.Repo")
 @patch("ir_api.scripts.acquisition.get_by_instrument_name")
 def test_get_script_for_reduction_with_valid_reduction_id(mock_get_by_name, mock_repo, mock_get_transform):
     """
@@ -217,7 +218,7 @@ def test_get_script_for_reduction_with_valid_reduction_id(mock_get_by_name, mock
     assert result == expected_script
 
 
-@patch("ir_api.scripts.acquisition.ReductionRepo")
+@patch("ir_api.scripts.acquisition.Repo")
 @patch("ir_api.scripts.acquisition.get_by_instrument_name", return_value="some instrument")
 def test_get_script_for_reduction_with_invalid_reduction_id(_, mock_repo):
     """
