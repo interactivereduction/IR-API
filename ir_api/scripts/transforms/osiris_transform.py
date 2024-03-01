@@ -2,6 +2,7 @@
 Module provides the OSIRISTransform class, an implementation of the Transform abstract base class for Osiris instrument
 scripts.
 """
+
 import logging
 from collections.abc import Iterable
 
@@ -31,9 +32,11 @@ class OsirisTransform(Transform):
                 lines,
                 index,
                 "input_runs",
-                reduction.reduction_inputs["runno"]  # type: ignore
-                if isinstance(reduction.reduction_inputs["runno"], Iterable)  # type: ignore
-                else f"[{reduction.reduction_inputs['runno']}]",  # type: ignore
+                (
+                    reduction.reduction_inputs["runno"]  # type: ignore
+                    if isinstance(reduction.reduction_inputs["runno"], Iterable)  # type: ignore
+                    else f"[{reduction.reduction_inputs['runno']}]"
+                ),  # type: ignore
             ):
                 continue
             if self._replace_input(line, lines, index, "cycle", reduction.reduction_inputs["cycle_string"]):  # type: ignore
