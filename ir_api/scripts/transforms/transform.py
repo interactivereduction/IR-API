@@ -9,6 +9,9 @@ MissingTransformError (Exception): A custom exception for handling cases where a
 """
 
 from abc import ABC, abstractmethod
+from typing import List, Union
+
+from sqlalchemy import ColumnElement
 
 from ir_api.core.model import Reduction
 from ir_api.scripts.pre_script import PreScript
@@ -27,6 +30,15 @@ class Transform(ABC):
         :param reduction: Reduction the reduction entity
         :return: None
         """
+
+    @staticmethod
+    def _replace_input(
+        line: str, lines: List[str], index: int, line_start: str, replacement: Union[ColumnElement["JSONB"], str]
+    ) -> bool:
+        if line.startswith(line_start):
+            lines[index] = f"{line_start} = {replacement}"
+            return True
+        return False
 
 
 class MissingTransformError(Exception):

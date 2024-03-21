@@ -26,7 +26,6 @@ test = [
     "pytest-cov==4.1.0",
     "pytest-random-order==1.1.1",
     "Faker==23.2.1"
-
 ]
 
 code-inspection = [

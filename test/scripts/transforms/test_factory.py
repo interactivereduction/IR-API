@@ -6,6 +6,7 @@ import pytest
 
 from ir_api.scripts.transforms.factory import get_transform_for_instrument
 from ir_api.scripts.transforms.mari_transforms import MariTransform
+from ir_api.scripts.transforms.osiris_transform import OsirisTransform
 from ir_api.scripts.transforms.test_transforms import TestTransform
 from ir_api.scripts.transforms.tosca_transform import ToscaTransform
 from ir_api.scripts.transforms.transform import MissingTransformError
@@ -28,6 +29,16 @@ def test_get_transform_for_tosca():
     """
     transform = get_transform_for_instrument("tosca")
     assert isinstance(transform, ToscaTransform)
+
+
+def test_get_transform_for__osiris():
+    """
+    Test that OsirisTransform is returned for Osiris
+    :return: None
+    """
+    instrument = "osiris"
+    transform = get_transform_for_instrument(instrument)
+    assert isinstance(transform, OsirisTransform)
 
 
 def test_get_transform_for_run_test():
